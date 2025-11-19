@@ -21,18 +21,18 @@ Current AI assistants provide one-size-fits-all responses, ignoring individual l
 ### **The Three Dimensions:**
 
 1. **Static Profile** (Who you are as a learner)
-    - Learning style preferences
-    - Content format preferences
-    - Communication style preferences
+   - Learning style preferences
+   - Content format preferences
+   - Communication style preferences
 
 2. **Dynamic State** (How you feel right now)
-    - Current energy level (high/medium/low)
-    - Academic emotion (curious, anxious, frustrated, bored, confused, neutral)
+   - Current energy level (high/medium/low)
+   - Academic emotion (curious, anxious, frustrated, bored, confused, neutral)
 
 3. **Human Oversight** (Keeping you in control)
-    - Validate your preferences before they're saved
-    - Review and edit all generated content
-    - Provide ongoing feedback
+   - Validate your preferences before they're saved
+   - Review and edit all generated content
+   - Provide ongoing feedback
 
 ### **Example:**
 
