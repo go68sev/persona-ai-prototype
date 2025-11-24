@@ -14,12 +14,13 @@ How to experiment:
 """
 
 from openai import OpenAI
+import os
+from dotenv import load_dotenv
 
-# import os
-# from dotenv import load_dotenv
-# load_dotenv()
+load_dotenv()  # loads .env
 
-client = OpenAI()
+api_key = os.getenv("OPENAI_API_KEY")
+client = OpenAI(api_key=api_key)
 
 # inside openAI() we can put api_key = os.getenv("OPEN_API_KEY")
 
