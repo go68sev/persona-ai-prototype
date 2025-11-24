@@ -1,0 +1,246 @@
+{
+  "OPENING SCRIPT": {
+    "type": "text",
+    "script": "Welcome👋! I’m your Personalized AI that understands YOU from day one, with you always in control.\n\nBefore we start working together, I’d love to learn a bit more about: \n - how you study \n - what motivates you \n - what kind of explanations feel natural to you.\n\nThis short-written questionnaire helps me understand your style so I can adapt to you — and only you.\n\n🤝 The goal is simple: we are a team. I’ll bring structure, clarity, and personalized explanations, and you bring your goals, your curiosity, and your feedback.\n\nThere are no right or wrong answers. Just choose what feels honest, comfortable, and true to you.\n\nYour responses guide how I support you, but you always have the final say.\n\n⏱ The questionnaire takes about 15 minutes.\n\n✨ Begin whenever you're ready — let’s build your personalized learning experience together."
+  },
+
+  "SECTION 1 — Personal Background": [
+    {
+      "question": "What are you studying?",
+      "type": "text",
+      "placeholder": "Write your degree or program."
+    },
+    {
+      "question": "Which subjects are you taking this semester?",
+      "type": "text",
+      "placeholder": "List all relevant courses."
+    },
+    {
+      "question": "What semester are you currently in?",
+      "type": "text",
+      "placeholder": "Enter a number."
+    },
+    {
+      "question": "What are your academic goals for this semester (e.g., grade goals)?",
+      "type": "text",
+      "placeholder": "Answer between 1-3 phrases."
+    },
+    {
+      "question": "Which subjects do you enjoy the most, and why?",
+      "type": "text",
+      "placeholder": "Make a list."
+    },
+    {
+      "question": "How old are you?",
+      "type": "text",
+      "placeholder": "Enter your age."
+    }
+  ],
+
+  "SECTION 2 — Learning Preferences": [
+    {
+      "question": "When learning something new, what helps you more?",
+      "type": "mcq",
+      "options": ["Examples first", "Theory first", "Both"]
+    },
+    {
+      "question": "What type of explanation works best for you?",
+      "type": "mcq",
+      "options": ["Diagrams/visuals", "Text-based explanations", "Both"]
+    },
+    {
+      "question": "Do analogies help you learn?",
+      "type": "mcq",
+      "options": ["Yes", "Sometimes", "No"]
+    },
+    {
+      "question": "How do you prefer explanations?",
+      "type": "mcq",
+      "options": ["Step-by-step", "High-level overview", "Depends on the topic"]
+    },
+    {
+      "question": "How much guidance do you prefer?",
+      "type": "mcq",
+      "options": ["Clear structure and guidance", "Independent exploration", "A balance of both" ]
+    },
+    {
+      "question": "What helps you understand better?",
+      "type": "mcq",
+      "options": ["Reptition and practice", "Understanding deep concepts", "A mix of both" ]
+    },
+    {
+      "question": "For memorization, what works best for you?",
+      "type": "mcq",
+      "options": ["Flashcards", "Mnemonics", "Summary", "Other"],
+      "allowOther": true,
+      "otherPlaceholder": "If Other, please specify"
+    },
+    {
+      "question": "How detailed do you like explanations? (1 = brief, 10 = very detailed)",
+      "type": "rating",
+      "scale": 10
+    },
+    {
+      "question": "Your study rhythm is usually:",
+      "type": "mcq",
+      "options": ["Regular throughout the semester", "Mostly near exams", "A mix of both"]
+    }
+    ,
+    {
+      "question": "When you make a mistake, you prefer to:",
+      "type": "mcq",
+      "options": ["Fix it immediately", "Move on and revisit later"]
+    },
+    {
+      "question": "Your review preference:",
+      "type": "mcq",
+      "options": ["Spread across several days", "One or two long sessions", "Depends"]
+    },
+    {
+      "question": "Do you like learning with flashcards?",
+      "type": "mcq",
+      "options": ["Yes", "Sometimes", "No"]
+    }
+  ],
+
+  "SECTION 3 — Content Preferences": [
+    {
+      "question": "Do you enjoy video-based learning?",
+      "type": "mcq",
+      "options": ["Yes", "Sometimes", "No"]
+    },
+    {
+      "question": "For technical topics, do you want code examples and implementations?",
+      "type": "mcq",
+      "options": ["Yes", "Only if necessary", "No"]
+    },
+    {
+      "question": "For example, you prefer:",
+      "type": "mcq",
+      "options": ["Multiple examples", "One strong example"]
+    },
+    {
+      "question": "Should explanations include practice problems?",
+      "type": "mcq",
+      "options": ["Yes", "Maybe later", "No"]
+    },
+    {
+      "question": "You prefer to learn by:",
+      "type": "mcq",
+      "options": ["Reading text", "Listening to audio", "Both equally"]
+    },
+    {
+      "question": "Do you want summaries after explanations?",
+      "type": "mcq",
+      "options": ["Yes", "Sometimes", "No"]
+    },
+    {
+      "question": "Do you want diagrams whenever possible?",
+      "type": "mcq",
+      "options": ["Yes", "Sometimes", "No"]
+    }
+  ],
+
+  "SECTION 4 — Comparison Questions (A vs B)": [
+    {
+      "question": "For answers, you prefer:",
+      "type": "mcq",
+      "options": ["Quick response", "Deep explanation"]
+    },
+    {
+      "question": "Do you like when the system asks you questions to engage your thinking?",
+      "type": "mcq",
+      "options": ["Yes", "No, just answer directly"]
+    },
+    {
+      "question": "Which writing style helps you more?",
+      "type": "mcq",
+      "options": ["Formal academic", "Conversational"]
+    },
+    {
+      "question": "When studying, you prefer:",
+      "type": "mcq",
+      "options": ["Exploring side topics", "Staying focused on the main goal"]
+    },
+    {
+      "question": "Which explanation style helps you understand better? Choose A or B.",
+      "type": "mcq",
+      "options": [
+        "A) Simple, kid-friendly style — A computer program is like giving instructions to a robot. You tell it what to do step by step, and it follows your commands!",
+        "B) Technical, academic style — A computer program is a sequence of formal instructions encoded in a programming language, executed by a machine following defined computational semantics."
+      ]
+    },
+    {
+      "question": "Which format helps you more when learning something new? Choose A or B.",
+      "type": "mcq",
+      "options": [
+        "A) Diagram-based explanation (visual) — A flowchart showing boxes for each step and arrows connecting them.",
+        "B) Text-based explanation (verbal) — A paragraph describing the steps in plain text, line by line."
+      ]
+    },
+    {
+      "question": "Which study approach feels more natural to you? Choose A or B.",
+      "type": "mcq",
+      "options": [
+        "A) Practical/Active approach — I learn best by solving problems, doing exercises, and practicing immediately.",
+        "B) Conceptual/Reflective approach — I learn best by understanding the ideas deeply first before trying any exercises."
+      ]
+    }
+  ],
+
+  "SECTION 5 — Tone & Communication": [
+    {
+      "question": "You prefer explanations to be:",
+      "type": "mcq",
+      "options": ["Short", "Medium", "Detailed"]
+    },
+    {
+      "question": "Preferred tone of communication:",
+      "type": "mcq",
+      "options": ["Serious", "Friendly and relaxed", "Friendly with emojis", "Neutral"]
+    },
+    {
+      "question": "By default, explanations should be:",
+      "type": "mcq",
+      "options": ["Brief (2–3 sentences)", "Moderate (1–2 paragraphs)", "Comprehensive (multiple paragraphs + examples)"]
+    }
+  ],
+
+  "SECTION 6 — Academic Emotions & Study Behavior": [
+    {
+      "question": "How often do you feel stuck when learning? (1–10)",
+      "type": "rating",
+      "scale": 10
+    },
+    {
+      "question": "After solving something challenging, you normally:",
+      "type": "mcq",
+      "options": ["Continue with the next problem", "Take a short break", "Stop studying"]
+    },
+    {
+      "question": "How comfortable are you sharing your mood with the system? (1–10)",
+      "type": "rating",
+      "scale": 10
+    },
+    {
+      "question": "When overwhelmed, what helps more?",
+      "type": "mcq",
+      "options": ["Encouragement", "Step-by-step structure", "Short break suggestions"]
+    },
+    {
+      "question": "How confident are you in your current study methods? (1–10)",
+      "type": "rating",
+      "scale": 10
+    },
+    {
+      "question": "Would you like the system to track your learning progress over time?",
+      "type": "mcq",
+      "options": ["Yes", "Maybe", "No"]
+    }
+  ],
+  
+  "Closing SCRIPT": {
+    "type": "text",
+    "script": "Your answers give me a clearer picture of how you think, learn, and stay motivated. This helps me shape explanations, study strategies, and communication in a way that truly fits your personal learning profile."
+  }
+}
