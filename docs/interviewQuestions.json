@@ -185,25 +185,32 @@
         "A) Practical/Active approach — I learn best by solving problems, doing exercises, and practicing immediately.",
         "B) Conceptual/Reflective approach — I learn best by understanding the ideas deeply first before trying any exercises."
       ]
+    }, 
+    {
+      "question": "Which feedback style helps you improve faster? Choose A or B.",
+      "type": "mcq",
+      "options": [
+        "A) Encouraging & supportive feedback — Great try! You're on the right track — here’s a small hint to guide you.",
+        "B) Direct & corrective feedback — This part is incorrect. Here is the right approach and how to fix it."
+      ]
+    }, 
+    {
+      "question": "Which explanation structure feels more natural to you? Choose A or B.",
+      "type": "mcq",
+      "options": [
+        "A) Narrative-style explanation — Imagine you’re walking through a city and each street represents a step in the algorithm…",
+        "B) Formal structured explanation — Step 1: Initialize variables. Step 2: Define the function. Step 3: Evaluate the input…"
+      ]
+    }, 
+    {
+      "question": "Which learning challenge do you prefer when practicing? Choose A or B.",
+      "type": "mcq",
+      "options": [
+        "A) Real-world relatable examples — Imagine you're organizing a playlist—sorting algorithms work the same way…",
+        "B) Abstract academic examples — Consider a sorted array of integers and a binary search operation…"
+      ]
     }
-  ],
 
-  "SECTION 5 — Tone & Communication": [
-    {
-      "question": "You prefer explanations to be:",
-      "type": "mcq",
-      "options": ["Short", "Medium", "Detailed"]
-    },
-    {
-      "question": "Preferred tone of communication:",
-      "type": "mcq",
-      "options": ["Serious", "Friendly and relaxed", "Friendly with emojis", "Neutral"]
-    },
-    {
-      "question": "By default, explanations should be:",
-      "type": "mcq",
-      "options": ["Brief (2–3 sentences)", "Moderate (1–2 paragraphs)", "Comprehensive (multiple paragraphs + examples)"]
-    }
   ],
 
   "SECTION 6 — Academic Emotions & Study Behavior": [
@@ -233,10 +240,41 @@
       "scale": 10
     },
     {
-      "question": "Would you like the system to track your learning progress over time?",
+      "question": "When you feel stressed about studying, what is your first reaction?",
       "type": "mcq",
-      "options": ["Yes", "Maybe", "No"]
-    }
+      "options": ["I try to push through it immediately", "I take a short pause to reset", "I avoid the task temporarily", "It depends on the situation"]
+    }, 
+    {
+  "question": "How do you feel about asking for help when you’re stuck?",
+  "type": "mcq",
+  "options": ["Very comfortable", "Comfortable", "Slightly uncomfortable", "Very uncomfortable"]
+},
+{
+  "question": "What usually drains your motivation the most?",
+  "type": "mcq",
+  "options": ["Feeling confused", "Feeling overwhelmed", "Not seeing progress", "Lack of interest in the topic"]
+},
+{
+  "question": "What helps you regain focus after getting distracted?",
+  "type": "mcq",
+  "options": ["Short breaks","Changing to an easier task","Reviewing goals","External reminders or prompts"]
+},
+{
+  "question": "How sensitive are you to the tone of feedback when learning? (1–10)",
+  "type": "rating",
+  "scale": 10
+},
+{
+  "question": "When you feel confident about a topic, what do you prefer to do next?",
+  "type": "mcq",
+  "options": [ "Move on to a harder topic", "Reinforce with a few more questions", "Review quickly and switch subjects", "Stop for the day"]
+},
+{
+  "question": "How often does anxiety impact your learning? (1–10)",
+  "type": "rating",
+  "scale": 10
+}
+
   ],
   
   "Closing SCRIPT": {
