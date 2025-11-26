@@ -1,8 +1,6 @@
 PREFERENCE_PARAMETERS = {
 
-# -------------------------------------------------------------
 # SECTION 1 — PERSONAL BACKGROUND
-# -------------------------------------------------------------
 
     "1": {  # What are you studying?
         "target": "academic_program",
@@ -46,9 +44,7 @@ PREFERENCE_PARAMETERS = {
         "default": None
     }, 
 
-    # -------------------------------------------------------------
     # SECTION 2 — LEARNING PREFERENCES
-    # -------------------------------------------------------------
 
     "7": {
         "target": "examples_vs_theory",
@@ -177,9 +173,7 @@ PREFERENCE_PARAMETERS = {
         "default": False
     }, 
 
-    # -------------------------------------------------------------
     # SECTION 3 — CONTENT PREFERENCES
-    # -------------------------------------------------------------
 
     "19": {
         "target": "video_learning",
@@ -257,9 +251,7 @@ PREFERENCE_PARAMETERS = {
         "default": True
     },
 
-        # -------------------------------------------------------------
     # SECTION 4 — COMPARISON QUESTIONS (A vs B)
-    # -------------------------------------------------------------
 
     "26": {
         "target": "response_depth",
@@ -361,10 +353,7 @@ PREFERENCE_PARAMETERS = {
         "default": "real-world"
     },
 
-
-    # -------------------------------------------------------------
     # SECTION 5 — EMOTIONS & STUDY BEHAVIOR
-    # -------------------------------------------------------------
 
     "36": {
         "target": "stuck_frequency",
