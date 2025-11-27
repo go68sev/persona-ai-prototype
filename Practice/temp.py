@@ -1,18 +1,21 @@
-USER_PROFILE_SCHEMA = {
 
-  "learning_profile": {
-    "personal_background": {
+{{
+  "learning_profile": {{
+    "personal_background": {{
       "academic_program": "string",
       "current_courses": "list[string]",
       "semester": "int",
       "academic_goals": "string",
       "favorite_subjects": ["string", "list[string]"],
       "age": "int"
-    },
+    }},
 
-    # SECTION 2 — LEARNING PREFERENCES
+    "learning_goals": {{
+      "short_term": "string",
+      "long_term": "string"
+     }},
 
-    "learning_preferences": {
+    "learning_preferences": {{
       "examples_vs_theory": ["examples-first", "theory-first", "mixed"],
       "visual_vs_verbal": ["visual", "verbal", "mixed"],
       "uses_analogies": "bool",
@@ -25,17 +28,9 @@ USER_PROFILE_SCHEMA = {
       "mistake_handling": ["immediate-fix", "deferred"],
       "review_style": ["spaced", "intensive", "depends"],
       "flashcard_preference": "bool"
-    },
+    }},
 
-    "learning_goals": {
-      "short_term": "string",
-      "long_term": "string"
-     },
-
-
-    # SECTION 3 — CONTENT PREFERENCES
-
-    "content_preferences": {
+    "content_preferences": {{
       "video_learning": "bool",
       "code_examples": ["yes", "if-necessary", "no"],
       "example_quantity": ["multiple", "single"],
@@ -47,11 +42,9 @@ USER_PROFILE_SCHEMA = {
       "complexity_tolerance": "string",
       "examples_preference": "string",
       "theory_vs_application": "string"
-     },
+     }},
 
-    # SECTION 4 — COMMUNICATION STYLE
-
-    "communication_style": {
+    "communication_style": {{
       "response_depth": ["quick", "deep"],
       "question_engagement": "bool",
       "writing_style": ["formal", "conversational"],
@@ -62,11 +55,9 @@ USER_PROFILE_SCHEMA = {
       "feedback_style": ["supportive", "direct"],
       "structure_preference": ["narrative", "structured"],
       "example_type_preference": ["real-world", "abstract"]
-     },
+     }},
 
-    # SECTION 5 — ACADEMIC EMOTIONS & STUDY BEHAVIOR
-
-    "academic_emotions_and_behavior": {
+    "academic_emotions_and_behavior": {{
       "stuck_frequency": "int",
       "post_challenge_behavior": ["continue", "break", "stop"],
       "mood_sharing_comfort": "int",
@@ -94,10 +85,9 @@ USER_PROFILE_SCHEMA = {
       "tone_sensitivity": "int",
       "post_confidence_behavior": ["advance", "reinforce", "switch", "stop"],
       "anxiety_impact": "int"
-     },
+     }},
 
-     
-    "cognitive_style":{
+    "cognitive_style":{{
       "processing_style": "string",
       "reasoning_style": "string",
       "pattern_recognition": "string",
@@ -105,51 +95,55 @@ USER_PROFILE_SCHEMA = {
       "decision_style": "string",
       "preferred_problem_solving_approach": "string",
       "learning_speed": "string"
-     },
+     }},
 
-    "motivation_profile": {
+    "motivation_profile": {{
       "intrinsic_motivators": "string",
       "extrinsic_motivators": "string",
       "reward_sensitivity": "string",
       "goal_orientation": "string",
       "long_term_motivation_drivers": "string"
-    },
+    }},
 
-    "behaviour_patterns": {
+    "behaviour_patterns": {{
       "study_habits": "string",
       "routine_patterns": "string",
       "consistency_level": "string",
       "task_starting_behaviour": "string",
       "avoidance_patterns": "string",
       "attention_span": "string"
-    },
+    }},
 
-    "pacing_preferences": {
+    "pacing_preferences": {{
       "difficulty_progression": "string",
       "preferred_pace": "string",
       "review_frequency": "string",
       "practice_frequency": "string",
       "time_of_day_preference": "string"
-     },
+     }},
 
-    "feedback_preferences": {
+    "feedback_preferences": {{
       "tone_preference": "string",
       "depth_of_explanation": "string",
       "error_correction_style": "string",
+      "affirmation_needed": "string",
       "hint_preference": "string"
-     },
+     }},
 
-    "frustration_model": {
+    "frustration_model": {{
       "common_frustrations": "string",
+      "frustration_intensity": "string",
+      "frustration_triggers": "string",
       "coping_style": "string"
-     },
+     }},
 
-    "engagement_model": {
+    "engagement_model": {{
       "engagement_drivers": "string",
       "interaction_preference": "string",
+      "flow_triggers": "string",
       "distraction_patterns": "string"
-    },
+    }},
 
     "summary": "string"
-  }
-}
+  }}
+}}
