@@ -12,7 +12,7 @@ RESPONSES_FILE = os.path.join(BASE_DIR, "profiles", "interviewResponse.json")  #
 os.makedirs(os.path.join(BASE_DIR, "profiles"), exist_ok=True)
 
 # --------------------- Step 1: Load Questions ---------------------
-with open(QUESTIONS_FILE, "r") as f:
+with open(QUESTIONS_FILE, "r", encoding="utf-8") as f:
     questions_data = json.load(f)
 
 sections = [key for key in questions_data.keys() if key not in ["OPENING SCRIPT", "Closing SCRIPT"]]
@@ -80,7 +80,7 @@ if st.session_state.section_idx >= len(sections):
     st.json(st.session_state.responses)
 
     # Save responses to JSON inside profiles folder
-    with open(RESPONSES_FILE, "w") as json_file:
+    with open(RESPONSES_FILE, "w", encoding="utf-8") as json_file:
         json.dump(st.session_state.responses, json_file, indent=4)
     st.write(f"✅ Responses saved to `{RESPONSES_FILE}`")
     
