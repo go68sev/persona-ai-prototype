@@ -7,6 +7,8 @@ from dotenv import load_dotenv
 load_dotenv()
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
+from user_profile_schema import USER_PROFILE_SCHEMA
+
 # ----------------- Paths -----------------
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RESPONSES_FILE = os.path.join(BASE_DIR, "profiles", "interviewResponse.json")
@@ -85,102 +87,18 @@ def safe_json_loads(text):
 # --- MAIN EXTRACTION BUTTON ---
 # ============================================================
 
-if st.button("✨ Extract Deep Preferences"):
+
+if st.button("✨ Extract Preferences using AI"):
 
     deep_schema_prompt = f"""
 You are an AI specializing in educational psychology, cognitive science, behavioral analysis, and personalized learning.
 Your goal is to extract the deepest learning profile possible from the student's interview.
 
-Return ONLY VALID JSON using this schema:
+Use the following JSON schema for the extracted preferences:
+{json.dumps(USER_PROFILE_SCHEMA, indent=4)}
 
 
-{{
-  "learning_profile": {{
-    "general_info": {{
-        "name": "",
-        "age": "",
-        "program": "",
-        "semester_of_study": "",
-    }},
-    "learning_goals": {{
-        "short_term": "",
-        "long_term": ""
-    }},
-    "preferred_study_environment": "",
-    "technology_preferences": [],
-    "learning_challenges": [],
-    "favourite_topics": [],
-
-    
-    "cognitive_style": {{
-      "processing_style": "",
-      "reasoning_style": "",
-      "pattern_recognition": "",
-      "confidence_level": "",
-      "decision_style": "",
-      "preferred_problem_solving_approach": "",
-      "learning_speed": ""
-    }},
-    "emotional_profile": {{
-      "stress_triggers": "",
-      "stress_responses": "",
-      "confidence_markers": "",
-      "emotional_needs": "",
-      "self_efficacy_beliefs": ""
-    }},
-    "motivation_profile": {{
-      "intrinsic_motivators": "",
-      "extrinsic_motivators": "",
-      "reward_sensitivity": "",
-      "goal_orientation": "",
-      "long_term_motivation_drivers": ""
-    }},
-    "behaviour_patterns": {{
-      "study_habits": "",
-      "routine_patterns": "",
-      "consistency_level": "",
-      "task_starting_behaviour": "",
-      "avoidance_patterns": "",
-      "attention_span": ""
-    }},
-    "content_preferences": {{
-      "format_preference": "",
-      "complexity_tolerance": "",
-      "examples_preference": "",
-      "theory_vs_application": "",
-      "visual_auditory_kinesthetic": "",
-      "preferred_use_cases_or_contexts": ""
-    }},
-    "pacing_preferences": {{
-      "difficulty_progression": "",
-      "preferred_pace": "",
-      "review_frequency": "",
-      "practice_frequency": "",
-      "time_of_day_preference": ""
-    }},
-    "feedback_preferences": {{
-      "tone_preference": "",
-      "depth_of_explanation": "",
-      "error_correction_style": "",
-      "affirmation_needed": "",
-      "hint_preference": ""
-    }},
-    "frustration_model": {{
-      "common_frustrations": "",
-      "frustration_intensity": "",
-      "frustration_triggers": "",
-      "coping_style": ""
-    }},
-    "engagement_model": {{
-      "engagement_drivers": "",
-      "interaction_preference": "",
-      "flow_triggers": "",
-      "distraction_patterns": ""
-    }},
-    "summary": ""
-  }}
-}}
-You can leave fields null if the data is unavailable, or you can make educated guesses about the missing fields. However a brief summary is always necessary.
+You can write 'N.A.' if the data is unavailable, or you can make educated guesses about the missing fields. However a brief summary is always necessary.
 This schema may be extended/updated in the future; prepare the JSON so new fields can be safely added later.
 
 
