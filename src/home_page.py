@@ -130,7 +130,12 @@ def profile_page():
                 cols = st.columns(num_cols)
                 for j, (key, value) in enumerate(items[i:i+num_cols]):
                     question_idx = int(key.split("-")[-1])
-                    question_text = questions_data.get(section, [{}])[question_idx].get("question", "Question not found")
+                    section_questions = questions_data.get(section, [])
+                    if question_idx < len(section_questions):
+                        question_text = section_questions[question_idx].get("question", "Question not found")
+                    else:
+                        # fallback: the data is inconsistent, so show a placeholder
+                        question_text = f"Question {question_idx} (Not found in JSON)"
 
                     with cols[j]:
                         st.markdown(
