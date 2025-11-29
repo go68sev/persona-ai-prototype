@@ -21,11 +21,9 @@ if not os.path.exists(RESPONSES_FILE):
     st.error("❌ No interview responses found! Please complete the interview first.")
     st.stop()
 
-
 # ----------------- Load Interview Responses -----------------
 with open(RESPONSES_FILE, "r", encoding="utf-8") as f:
     responses = json.load(f)
-
 
 st.subheader("📄 Interview Responses Loaded")
 st.json(responses)
@@ -69,12 +67,12 @@ def safe_json_loads(text):
     if text is None or text.strip() == "":
         return None
 
-    cleaned = text.strip()  # removes blank spaces at start/end.
+    cleaned = text.strip()
 
     # Remove Markdown code fences if present
-    if cleaned.startswith("```"): 
-        cleaned = cleaned.strip("`")  # Removes surrounding backticks `````
-        cleaned = cleaned.replace("json", "", 1).strip() # Removes the optional json language tag
+    if cleaned.startswith("```"):
+        cleaned = cleaned.strip("`")
+        cleaned = cleaned.replace("json", "", 1).strip()
 
     # Remove leading/trailing whitespace
     cleaned = cleaned.strip()
@@ -88,6 +86,7 @@ def safe_json_loads(text):
 # ============================================================
 # --- MAIN EXTRACTION BUTTON ---
 # ============================================================
+
 
 if st.button("✨ Extract Preferences using AI"):
 

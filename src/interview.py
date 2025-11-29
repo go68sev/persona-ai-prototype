@@ -77,7 +77,6 @@ if st.session_state.section_idx >= len(sections):
         typing_effect(questions_data["Closing SCRIPT"]["script"])
     
     st.success("🎉 Interview Completed!")
-    st.json(st.session_state.responses)
 
     # Save responses to JSON inside profiles folder
     with open(RESPONSES_FILE, "w", encoding="utf-8") as json_file:
