@@ -78,6 +78,10 @@ if st.session_state.section_idx >= len(sections):
     
     st.success("🎉 Interview Completed!")
 
+    # Save responses to JSON inside profiles folder
+    with open(RESPONSES_FILE, "w", encoding="utf-8") as json_file:
+        json.dump(st.session_state.responses, json_file, indent=4)
+    st.write(f"✅ Responses saved to `{RESPONSES_FILE}`")
     
     st.stop()
 
