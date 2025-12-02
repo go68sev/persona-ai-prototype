@@ -15,7 +15,7 @@ os.makedirs(os.path.join(BASE_DIR, "profiles"), exist_ok=True)
 with open(QUESTIONS_FILE, "r", encoding="utf-8") as f:
     questions_data = json.load(f)
 
-sections = [key for key in questions_data.keys() if key not in ["OPENING SCRIPT", "Closing SCRIPT"]]
+sections = [key for key in questions_data.keys() if key not in ["OPENING SCRIPT", "CLOSING SCRIPT"]]
 
 # --------------------- Step 2: Initialize Session State ---------------------
 for key, default in {
@@ -74,7 +74,7 @@ if st.session_state.section_idx == -1:
 if st.session_state.section_idx >= len(sections):
     if not st.session_state.closing_displayed:
         st.session_state.closing_displayed = True
-        typing_effect(questions_data["Closing SCRIPT"]["script"])
+        typing_effect(questions_data["CLOSING SCRIPT"]["script"])
     
     st.success("🎉 Interview Completed!")
 
@@ -120,8 +120,17 @@ elif current_q["type"] == "mcq":
     response = st.radio("", options, index=default_index, label_visibility="collapsed")
 elif current_q["type"] == "rating":
     st.markdown(f'<p class="big-question">{current_q["question"]}</p>', unsafe_allow_html=True)
-    default_value = existing_response if existing_response else 1
-    response = st.slider("", 1, current_q["scale"], value=default_value, label_visibility="collapsed")
+    default_value = existing_response if existing_response is not None else 0
+    scale_labels = current_q.get("scale_labels", {})
+    min_label = scale_labels.get("0", "")
+    max_label = scale_labels.get("10", "") if current_q["scale"] == 10 else scale_labels.get(str(current_q["scale"]), "")
+    if min_label or max_label:
+        col_left, col_right = st.columns([1, 1])
+        with col_left:
+            st.caption(f"0 = {min_label}")
+        with col_right:
+            st.caption(f"{current_q['scale']} = {max_label}")
+    response = st.slider("", 0, current_q["scale"], value=default_value, label_visibility="collapsed")
 
 # Check if question is mandatory
 is_mandatory = True

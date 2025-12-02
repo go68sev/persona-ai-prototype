@@ -20,7 +20,7 @@ load_dotenv()
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 from user_profile_schema import USER_PROFILE_SCHEMA
-from utils import extract_text, safe_json_loads
+from utils import extract_text, safe_json_loads, format_bool
 
 # ----------------- Paths -----------------
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -31,18 +31,6 @@ OUTPUT_FILE = os.path.join(BASE_DIR, "profiles", "extractedPreferences.json")
 # ============================================================
 # HELPER FUNCTIONS
 # ============================================================
-
-def format_bool(value):
-    """Format boolean values nicely for display."""
-    if value is True:
-        return "Yes"
-    elif value is False:
-        return "No"
-    elif value == "sometimes":
-        return "Sometimes"
-    else:
-        return "N/A"
-
 
 def show_progress_bar(label, value, max_value=10):
     """
