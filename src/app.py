@@ -9,11 +9,13 @@ FIXES APPLIED:
 2. Added imports from utils.py for proper error handling
 3. Improved error handling throughout
 4. Better integration with extract_preferences.py
+5. Added save functionality to edit profile
 """
 
 import streamlit as st
 import json
 import os
+import time
 import importlib.util
 from openai import OpenAI
 from dotenv import load_dotenv
@@ -229,6 +231,36 @@ def profile_page():
                             )
 
                         st.markdown("<div style='margin-bottom:15px;'></div>", unsafe_allow_html=True)
+
+        # Save button
+        st.markdown("---")
+        col1, col2, col3 = st.columns([2, 1, 2])
+        with col2:
+            if st.button("💾 Save Changes", type="primary", use_container_width=True):
+                try:
+                    # Remove old file if it exists
+                    if os.path.exists(RESPONSES_FILE):
+                        os.remove(RESPONSES_FILE)
+                    
+                    # Save new responses
+                    with open(RESPONSES_FILE, "w", encoding="utf-8") as f:
+                        json.dump(updated_responses, f, indent=4)
+                    
+                    # Also remove extracted preferences so it regenerates with new data
+                    if os.path.exists(EXTRACTED_PREFS_FILE):
+                        os.remove(EXTRACTED_PREFS_FILE)
+                    
+                    st.success("✅ Your profile has been updated successfully!")
+                    st.info("🔄 AI Learning Profile will regenerate with your new responses.")
+                    
+                    # Wait a moment for user to see the message
+                    time.sleep(1.5)
+                    st.rerun()
+                    
+                except PermissionError:
+                    st.error("❌ Permission denied. Cannot save changes.")
+                except Exception as e:
+                    st.error(f"❌ Error saving changes: {str(e)}")
 
     # ------------------ TAB 2: AI Learning Profile ------------------
     # FIXED: Now correctly maps to USER_PROFILE_SCHEMA structure
@@ -451,9 +483,9 @@ def profile_page():
                     st.rerun()
                 except Exception as e:
                     st.error(f"❌ Could not delete profile: {e}")
-            else:
-                st.info("⚙️ No AI profile found. Generating now...")
-                run_extract_preferences()
+        else:
+            st.info("⚙️ No AI profile found. Generating now...")
+            run_extract_preferences()
 
 # --------------------- Interview Page ---------------------
 def interview_page():
