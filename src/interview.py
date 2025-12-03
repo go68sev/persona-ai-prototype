@@ -115,10 +115,16 @@ if current_q["type"] == "text":
 elif current_q["type"] == "mcq":
     st.markdown(f'<p class="big-question">{current_q["question"]}</p>', unsafe_allow_html=True)
     options = current_q.get("options", [])
-    default_index = options.index(existing_response) if existing_response in options else 0
-    response = st.radio("", options, index=default_index, label_visibility="collapsed")
+    # FIX 1: Only set default_index if there's an existing response, otherwise use None
+    if existing_response and existing_response in options:
+        default_index = options.index(existing_response)
+        response = st.radio("", options, index=default_index, label_visibility="collapsed", key=f"mcq_{response_key}")
+    else:
+        # Use index=None to force user to make a selection
+        response = st.radio("", options, index=None, label_visibility="collapsed", key=f"mcq_{response_key}")
 elif current_q["type"] == "rating":
     st.markdown(f'<p class="big-question">{current_q["question"]}</p>', unsafe_allow_html=True)
+    # FIX 2: Use the existing response or default to the minimum value, with unique key
     default_value = existing_response if existing_response is not None else 0
     scale_labels = current_q.get("scale_labels", {})
     min_label = scale_labels.get("0", "")
@@ -129,7 +135,8 @@ elif current_q["type"] == "rating":
             st.caption(f"0 = {min_label}")
         with col_right:
             st.markdown(f"<div style='text-align: right;'><small>{current_q['scale']} = {max_label}</small></div>", unsafe_allow_html=True)
-    response = st.slider("", 0, current_q["scale"], value=default_value, label_visibility="collapsed")
+    # Add unique key based on response_key to prevent value carryover
+    response = st.slider("", 0, current_q["scale"], value=default_value, label_visibility="collapsed", key=f"slider_{response_key}")
 
 # Check if question is mandatory
 is_mandatory = True
@@ -164,7 +171,7 @@ if show_previous:
                     error_msg = "⚠️ Please answer this question before proceeding."
                 elif current_q["type"] == "mcq" and not response:
                     error_msg = "⚠️ Please select an option before proceeding."
-                elif current_q["type"] == "rating" and not response:
+                elif current_q["type"] == "rating" and response is None:
                     error_msg = "⚠️ Please provide a rating before proceeding."
                 
                 if error_msg:
@@ -191,7 +198,7 @@ else:
                     error_msg = "⚠️ Please answer this question before proceeding."
                 elif current_q["type"] == "mcq" and not response:
                     error_msg = "⚠️ Please select an option before proceeding."
-                elif current_q["type"] == "rating" and not response:
+                elif current_q["type"] == "rating" and response is None:
                     error_msg = "⚠️ Please provide a rating before proceeding."
                 
                 if error_msg:
