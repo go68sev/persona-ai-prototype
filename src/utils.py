@@ -108,6 +108,16 @@ def safe_json_loads(text):
     except json.JSONDecodeError:
         return None
 
+def format_bool(value):
+    """Format boolean values nicely for display."""
+    if value is True:
+        return "Yes"
+    elif value is False:
+        return "No"
+    elif value == "sometimes":
+        return "Sometimes"
+    else:
+        return "N/A"
 
 def format_scale_value(value, max_value=10):
     """
