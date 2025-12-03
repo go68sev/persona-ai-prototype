@@ -81,8 +81,7 @@ if st.session_state.section_idx >= len(sections):
     # Save responses to JSON inside profiles folder
     with open(RESPONSES_FILE, "w", encoding="utf-8") as json_file:
         json.dump(st.session_state.responses, json_file, indent=4)
-    st.write(f"✅ Responses saved to `{RESPONSES_FILE}`")
-    
+    st.write("✅ Your interview responses have been saved to your profile!")    
     st.stop()
 
 current_section = sections[st.session_state.section_idx]
@@ -129,7 +128,7 @@ elif current_q["type"] == "rating":
         with col_left:
             st.caption(f"0 = {min_label}")
         with col_right:
-            st.caption(f"{current_q['scale']} = {max_label}")
+            st.markdown(f"<div style='text-align: right;'><small>{current_q['scale']} = {max_label}</small></div>", unsafe_allow_html=True)
     response = st.slider("", 0, current_q["scale"], value=default_value, label_visibility="collapsed")
 
 # Check if question is mandatory
