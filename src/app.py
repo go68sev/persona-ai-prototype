@@ -27,6 +27,7 @@ RESPONSES_FILE = os.path.join(BASE_DIR, "profiles", "interviewResponse.json")
 QUESTIONS_FILE = os.path.join(BASE_DIR, "docs", "interviewQuestions.json")
 EXTRACTED_PREFS_FILE = os.path.join(BASE_DIR, "profiles", "extractedPreferences.json")
 INTERVIEW_PY_PATH = os.path.join(CURRENT_DIR, "interview.py")
+CHATBOT_PY_PATH = os.path.join(CURRENT_DIR, "generate_content.py")
 EXTRACT_PREFS_PY_PATH = os.path.join(CURRENT_DIR, "extract_preferences.py")
 
 # Import helper functions from utils.py
@@ -74,9 +75,12 @@ st.markdown("""
 
 # --------------------- Initialize Session State ---------------------
 if "page" not in st.session_state:
-    st.session_state.page = "interview"
+    st.session_state.page = "chatbot"
 if "interview_completed" not in st.session_state:
     st.session_state.interview_completed = False
+# if st.session_state.interview_completed == True:
+#     st.session_state.page = "chatbot"
+
 
 if os.path.exists(RESPONSES_FILE) and os.path.getsize(RESPONSES_FILE) > 0:
     st.session_state.interview_completed = True
@@ -185,20 +189,20 @@ def profile_page():
     # ------------------ TAB 1: Editable Profile ------------------
     with tab1:
         st.info("💡 You can edit your answers directly below. Click save when done.")
-        updated_responses = {}
+        updated_responses = {}   # preparing to Store Updated Responses
 
         # Group responses by section
         sections_dict = {}
         for key, value in responses.items():
-            section_name = key.rsplit("-", 1)[0]
+            section_name = key.rsplit("-", 1)[0]  # removes the question index to get the section name
             sections_dict.setdefault(section_name, []).append((key, value))
 
-        for section, items in sections_dict.items():
+        for section, items in sections_dict.items():  # Loop through sections
             st.markdown(f"### 🗂 {section}")
-            num_cols = 2
+            num_cols = 2   # display 2 questions side by side
             for i in range(0, len(items), num_cols):
                 cols = st.columns(num_cols)
-                for j, (key, value) in enumerate(items[i:i+num_cols]):
+                for j, (key, value) in enumerate(items[i:i+num_cols]):  # Loop through questions in the section
                     question_idx = int(key.split("-")[-1])
 
                     # Safe access to question text
@@ -208,7 +212,7 @@ def profile_page():
                     else:
                         question_text = "Question not found"
 
-                    with cols[j]:
+                    with cols[j]:    # Display the question
                         st.markdown(
                             f"""
                             <div style='background-color:#E0F7FA; padding:12px; border-radius:12px; margin-bottom:4px;'>
@@ -221,14 +225,14 @@ def profile_page():
                         # Unique keys for widgets
                         if isinstance(value, (int, float)) and 1 <= value <= 10:
                             updated_responses[key] = st.slider(
-                                "", 1, 10, int(value), key=f"slider_{key}"
+                                "", 1, 10, int(value), key=f"slider_{key}"  # If the previous answer is numeric (1–10), show a slider.
                             )
                         else:
                             updated_responses[key] = st.text_area(
-                                "", value=value, height=80, key=f"text_area_{key}"
+                                "", value=value, height=80, key=f"text_area_{key}"  # Otherwise, show a text area for free text input.
                             )
 
-                        st.markdown("<div style='margin-bottom:15px;'></div>", unsafe_allow_html=True)
+                        st.markdown("<div style='margin-bottom:15px;'></div>", unsafe_allow_html=True)  # vertical spacing after each question
 
     # ------------------ TAB 2: AI Learning Profile ------------------
     # FIXED: Now correctly maps to USER_PROFILE_SCHEMA structure
@@ -259,7 +263,7 @@ def profile_page():
             # ===== SECTION 1: BACKGROUND =====
             st.markdown("### 📚 Background")
             bg = lp.get("background", {})
-            col1, col2 = st.columns(2)
+            col1, col2 = st.columns(2)  # Uses 2 columns to display related info side by side.
             with col1:
                 st.markdown(
                     f"""
@@ -460,7 +464,7 @@ def interview_page():
     """Load and run the interview module."""
     try:
         if not os.path.exists(INTERVIEW_PY_PATH):
-            st.error(f"❌ Interview script not found at: {INTERVIEW_PY_PATH}")
+            st.error(f"❌ Interview Page not found at: {INTERVIEW_PY_PATH}")
             return
 
         spec = importlib.util.spec_from_file_location("interview", INTERVIEW_PY_PATH)
@@ -471,6 +475,27 @@ def interview_page():
             st.session_state.interview_completed = True
     except Exception as e:
         st.error(f"❌ Error loading interview: {str(e)}")
+
+# --------------------- Chatbot Page ---------------------
+def chatbot_page():
+    """Load and run the Chatbot."""
+    try:
+        if not os.path.exists(CHATBOT_PY_PATH):
+            st.error(f"❌ Chatbot Page not found at: {CHATBOT_PY_PATH}")
+            return
+
+        spec = importlib.util.spec_from_file_location("chatbot", CHATBOT_PY_PATH)
+        chatbot_module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(chatbot_module)
+
+        # Call the chatbot UI function
+        if hasattr(chatbot_module, "generate_content"):
+            chatbot_module.generate_content()
+        else:
+            st.error("❌ generate_content() not found inside generate_content.py")
+
+    except Exception as e:
+        st.error(f"❌ Error loading chatbot: {str(e)}")
 
 # --------------------- Main App ---------------------
 def main():
@@ -499,7 +524,7 @@ def main():
     elif st.session_state.page == "profile":
         profile_page()
     elif st.session_state.page == "chatbot":
-        st.info("🚧 Chatbot page coming soon!")
+        chatbot_page()
 
 if __name__ == "__main__":
     main()
