@@ -1,0 +1,12 @@
+[
+  {
+    "role": "user",
+    "content": "How many hours should I study today?",
+    "timestamp": "2025-12-04T12:42:35.640333"
+  },
+  {
+    "role": "assistant",
+    "content": "Since you prefer regular study sessions with a focus duration of 1-2 hours, I recommend aiming for about 1-2 hours of focused study today. If you feel you\u2019re getting overwhelmed or need a break, don\u2019t hesitate to take a short break and then dive back in! How are you feeling about your current material?",
+    "timestamp": "2025-12-04T12:42:39.518058"
+  }
+]
