@@ -77,7 +77,7 @@ st.markdown("""
 
 # --------------------- Initialize Session State ---------------------
 if "page" not in st.session_state:
-    st.session_state.page = "chatbot"
+    st.session_state.page = "interview"
 if "interview_completed" not in st.session_state:
     st.session_state.interview_completed = False
 # if st.session_state.interview_completed == True:
