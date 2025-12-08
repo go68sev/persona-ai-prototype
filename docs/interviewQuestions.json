@@ -203,7 +203,7 @@
       ]
     }, 
     {
-      "question": "Which learning challenge do you prefer when practicing? Choose A or B.",
+      "question": "Which type of examples do you prefer when practicing? Choose A or B.",
       "type": "mcq",
       "options": [
         "A) Real-world relatable examples — Imagine you're organizing a playlist—sorting algorithms work the same way…",
