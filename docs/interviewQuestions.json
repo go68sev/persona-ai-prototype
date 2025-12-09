@@ -190,8 +190,24 @@
       "question": "Which learning challenge do you prefer when practicing?",
       "type": "mcq",
       "options": [
-        "Real-world relatable examples — \"Imagine you're organizing a playlist—sorting algorithms work the same way…\"",
-        "Abstract academic examples — \"Consider a sorted array of integers and a binary search operation…\""
+        "A) Encouraging & supportive feedback — Great try! You're on the right track — here’s a small hint to guide you.",
+        "B) Direct & corrective feedback — This part is incorrect. Here is the right approach and how to fix it."
+      ]
+    }, 
+    {
+      "question": "Which explanation structure feels more natural to you? Choose A or B.",
+      "type": "mcq",
+      "options": [
+        "A) Narrative-style explanation — Imagine you’re walking through a city and each street represents a step in the algorithm…",
+        "B) Formal structured explanation — Step 1: Initialize variables. Step 2: Define the function. Step 3: Evaluate the input…"
+      ]
+    }, 
+    {
+      "question": "Which type of examples do you prefer when practicing? Choose A or B.",
+      "type": "mcq",
+      "options": [
+        "A) Real-world relatable examples — Imagine you're organizing a playlist—sorting algorithms work the same way…",
+        "B) Abstract academic examples — Consider a sorted array of integers and a binary search operation…"
       ]
     }
   ],
