@@ -52,26 +52,55 @@ def load_subjects():
         st.error(f"❌ Could not load subjects: {e}")
         return ["general"]
     
-def save_chat(subject, role, content):
+def save_chat(subject, role, content, date=None, msg_index=None):
+    """
+    Save a chat message or update feedback in the chat JSON file.
+    
+    Args:
+        subject (str): Subject name.
+        role (str): 'user' or 'assistant'.
+        content (str): Message content.
+        date (str, optional): Date string 'YYYY-MM-DD'. Defaults to today.
+        msg_index (int, optional): Index of message to update (for feedback). If None, append new message.
+    """
     folder = "profiles/chat_history"
     os.makedirs(folder, exist_ok=True)
     file_path = os.path.join(folder, f"{subject}.json")
 
-    timestamp = datetime.now().isoformat()
-    entry = {"role": role, "content": content, "timestamp": timestamp}
+    if date is None:
+        date = datetime.now().strftime("%Y-%m-%d")
 
-    # Load existing messages
+    # Load existing data
     if os.path.exists(file_path):
         with open(file_path, "r", encoding="utf-8") as f:
             try:
                 data = json.load(f)
-            except json.JSONDecodeError:
-                data = []
+            except:
+                data = {}
     else:
-        data = []
+        data = {}
 
-    data.append(entry)
+    # Ensure today's list exists
+    if date not in data:
+        data[date] = []
 
+    # If msg_index is provided, update that message (feedback)
+    if msg_index is not None:
+        if 0 <= msg_index < len(data[date]):
+            data[date][msg_index] = content
+        else:
+            # Fallback: append if index is invalid
+            data[date].append(content)
+    else:
+        # Append new message
+        data[date].append({
+            "role": role,
+            "content": content,
+            "timestamp": datetime.now().isoformat(),
+            "feedback": {"thumbs_up": 0, "thumbs_down": 0} if role == "assistant" else {}
+        })
+
+    # Save back to file
     with open(file_path, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)
 
@@ -80,86 +109,180 @@ def load_chat(subject):
     file_path = os.path.join(folder, f"{subject}.json")
 
     if not os.path.exists(file_path):
-        return []
+        return {}
 
     try:
         with open(file_path, "r", encoding="utf-8") as f:
             return json.load(f)
-    except Exception:
-        return []
+    except:
+        return {}
+
+def save_feedback(subject, date):
+    folder = "profiles/chat_history"
+    os.makedirs(folder, exist_ok=True)
+    file_path = os.path.join(folder, f"{subject}.json")
+
+    # Load existing data
+    if os.path.exists(file_path):
+        with open(file_path, "r", encoding="utf-8") as f:
+            try:
+                data = json.load(f)
+            except:
+                data = {}
+    else:
+        data = {}
+
+    # Ensure date entry exists
+    if date not in data:
+        data[date] = []
+
+    # Update counts for today
+    counts = st.session_state.feedback_summary[subject][date]
+    data[date + "_feedback"] = counts
+
+    with open(file_path, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2)
 
 def generate_content():
     """
-    Chatbot page.
-    Users can ask questions and receive AI-generated responses.
+    Chatbot page with:
+    - right-side subject selector
+    - daily chat sessions stored inside the subject JSON
+    - ability to view old chats
+    - thumbs up/down feedback per AI response
     """
-    st.title("💬 Chat with Persona AI")
-    st.markdown("Ask anything — I'm here to help! 😇")
+    # ---------------- Layout ----------------
+    left, right = st.columns([3, 1])
 
+    with left:
+        st.title("💬 Chat with Persona AI")
+        st.markdown("Ask anything — I'm here to help! 😇")
+
+    # ---------------- Dropdown Row ----------------
+    col1, col2 = st.columns([1, 1])
+
+    with col1:
+        subjects = load_subjects()
+        subjects.insert(0, "General")
+        subject = st.selectbox(
+            "Subject",
+            subjects,
+            key="subject_dropdown"
+        )
+
+    # Load chat history after subject loads
     profile = load_user_profile()
 
-    # TODO: need to store the chat history 
+    # ---------------- Manage Session State ----------------
     if "chat_history" not in st.session_state:
         st.session_state.chat_history = {}
 
-    # ---------------- Input box ----------------
-    user_input = st.text_input(
-        "You:", placeholder="Type your question here...", key="user_input"
-    )
-
-    # ----------------------------------------
-    # Construct system prompt with user profile
-    system_prompt = f"""
-    You are Persona AI, a personalized assistant.
-
-    Here is the user's profile data extracted from an interview:
-    {json.dumps(profile, indent=2)}
-
-    Always use this information to tailor your responses.
-    Respond in a tone that the user prefers.
-    Generate the content according to their learning preferences.
-    """
-    # --------------------------------------------
-
-    # Load subjects dynamically
-    subjects = load_subjects()
-    subjects.insert(0, "General")  # Always have a general option
-
-    subject = st.selectbox(
-        "Select the topic/subject:",
-        subjects,
-        index=0
-    )
-    # Ensure chat history for the selected subject exists
+    # Load subject chat history (from file if first time)
     if subject not in st.session_state.chat_history:
-        # Load from file if exists
         st.session_state.chat_history[subject] = load_chat(subject)
 
-    if st.button("Send") and user_input:
-        # Append to session state for this subject
-        st.session_state.chat_history[subject].append({"role": "user", "content": user_input})
+    chat_by_date = st.session_state.chat_history[subject]
+    today = datetime.now().strftime("%Y-%m-%d")
+
+    if not chat_by_date:
+        chat_by_date[today] = []
+
+    chat_dates = sorted(chat_by_date.keys(), reverse=True)
+
+    with col2:
+        active_date = st.selectbox(
+            "Chat session",
+            chat_dates,
+            index=0,
+            key="date_dropdown"
+        )
+
+    # ---------------- Chat Input ----------------
+    user_input = st.text_input(
+        "You:",
+        placeholder="Type your question here...",
+        key="user_input"
+    )
+
+    # ---------------- Chat Send Logic ----------------
+    if st.button("Send", key="send_button") and user_input.strip():
+        # Append user message
+        chat_by_date[active_date].append({
+            "role": "user",
+            "content": user_input,
+            "timestamp": datetime.now().isoformat()
+        })
         save_chat(subject, "user", user_input)
 
+        # Build system prompt
+        system_prompt = f"""
+        You are Persona AI, a personalized assistant.
+
+        Here is the user's profile data extracted from an interview:
+        {json.dumps(profile, indent=2)}
+
+        The topic we are dealing with is "{subject}".
+
+        Always use this information to tailor your responses.
+        Respond in a tone that the user prefers.
+        Generate the content according to their learning preferences.
+        """
+
+        # Generate AI response
         try:
             response = client.chat.completions.create(
                 model="gpt-4o-mini",
                 messages=[{"role": "system", "content": system_prompt}]
-                        + st.session_state.chat_history[subject],
+                         + chat_by_date[active_date],
                 temperature=0.7,
             )
             ai_message = response.choices[0].message.content
 
-            st.session_state.chat_history[subject].append({"role": "assistant", "content": ai_message})
-            save_chat(subject, "assistant", ai_message)
+            chat_by_date[active_date].append({
+                "role": "assistant",
+                "content": ai_message,
+                "timestamp": datetime.now().isoformat(),
+                "feedback": {"thumbs_up": 0, "thumbs_down": 0}
+            })
+            save_chat(subject, "assistant", chat_by_date[active_date][-1])
 
         except Exception as e:
-            ai_message = f"❌ Error generating response: {e}"
+            ai_message = f"❌ Error generating response: {str(e)}"
             st.error(ai_message)
-            st.session_state.chat_history[subject].append({"role": "assistant", "content": ai_message})
+            chat_by_date[active_date].append({
+                "role": "assistant",
+                "content": ai_message,
+                "timestamp": datetime.now().isoformat(),
+                "feedback": {"thumbs_up": 0, "thumbs_down": 0}
+            })
+            save_chat(subject, "assistant", chat_by_date[active_date][-1])
 
-    # ---------------- Display chat ----------------
-    for msg in st.session_state.chat_history.get(subject, []):
+    # ---------------- Display Chat ----------------
+    messages = chat_by_date.get(active_date, [])
+    chat_container = st.container()
+    for i, msg in enumerate(messages):
         if msg["role"] == "user":
             st.markdown(f"**You:** {msg['content']}")
         else:
             st.markdown(f"**Persona:** {msg['content']}")
+
+            # -------- Feedback Buttons per AI message --------
+            col_up, col_down, _ = st.columns([1, 1, 7])
+
+            thumbs_up_key = f"up_{active_date}_{i}"
+            thumbs_down_key = f"down_{active_date}_{i}"
+
+            # Render buttons with markdown and HTML
+            thumbs_up_clicked = col_up.button("👍", key=thumbs_up_key, help="Press to like", args=None)
+            thumbs_down_clicked = col_down.button("👎", key=thumbs_down_key, help="Press to dislike", args=None)
+
+            # Logic to handle clicks and highlight
+            if thumbs_up_clicked:
+                msg["feedback"]["thumbs_up"] = 1
+                msg["feedback"]["thumbs_down"] = 0
+                save_chat(subject, "assistant", msg, date=active_date, msg_index=i)
+
+            if thumbs_down_clicked:
+                msg["feedback"]["thumbs_down"] = 1
+                msg["feedback"]["thumbs_up"] = 0
+                save_chat(subject, "assistant", msg, date=active_date, msg_index=i)
