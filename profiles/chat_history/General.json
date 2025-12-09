@@ -1,0 +1,19 @@
+{
+  "2025-12-08": [
+    {
+      "role": "user",
+      "content": "How many hours should I study today?",
+      "timestamp": "2025-12-08T19:01:55.759442",
+      "feedback": {}
+    },
+    {
+      "role": "assistant",
+      "content": "Given your regular study rhythm and focus duration of 1-2 hours, it would be effective to aim for a study session of about 1 to 2 hours today. If you're feeling particularly motivated or if there's a lot to cover, you could also consider splitting that into two shorter sessions with a short break in between. This way, you'll maintain your focus while also giving yourself a chance to recharge! How does that sound?",
+      "timestamp": "2025-12-08T19:02:01.373467",
+      "feedback": {
+        "thumbs_up": 1,
+        "thumbs_down": 0
+      }
+    }
+  ]
+}

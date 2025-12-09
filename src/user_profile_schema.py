@@ -1,92 +1,55 @@
 USER_PROFILE_SCHEMA = {
+  "learning_profile": {
 
-    "personal_background": {
-        "academic_program": str,                 
-        "current_courses": list,
-        "semester": int,
-        "academic_goals": str,                   
-        "favorite_subjects": (str, list),
-        "age": int                             
+    # SECTION 1 - BACKGROUND (who they are)
+    "background": {
+      "academic_program": "string",
+      "semester": "int",
+      "current_focus": "string",
+      "goals": "string",
+      "age": "int"
     },
 
-    # SECTION 2 — LEARNING PREFERENCES
-
+    # SECTION 2 - LEARNING PREFERENCES (how they learn best)
     "learning_preferences": {
-        "examples_vs_theory": ("examples-first", "theory-first", "mixed"),
-        "visual_vs_verbal": ("visual", "verbal", "mixed"),
-        "uses_analogies": (bool, str),
-        "explanation_preference": ("step-by-step", "high-level", "mixed"),
-        "guidance_preference": ("structured", "independent", "balanced"),
-        "learning_mode": ("practice", "conceptual"),
-        "memorization_strategy": ("flashcards", "summaries", "mnemonics", "other"),
-        "study_rhythm": ("regular", "cram", "mixed"),
-        "detail_level": int,
-        "mistake_handling": ("immediate-fix", "deferred"),
-        "review_style": ("spaced", "intensive", "depends"),
-        "flashcard_preference": (bool, str)
+      "explanation_preference": ["step-by-step", "high-level", "mixed"],
+      "examples_preference": ["examples-first", "theory-first", "mixed"],
+      "detail_level": "int (1-10)",
+      "guidance_preference": ["structured", "independent", "balanced"],
+      "uses_analogies": "bool",
+      "presentation_style": ["visual", "verbal", "mixed"],
+      "practice_problems": "bool",
+      "code_examples": ["yes", "if-necessary", "no"]
     },
 
-    # SECTION 3 — CONTENT PREFERENCES
 
-    "content_preferences": {
-        "video_learning": (bool, str),
-        "code_examples": ("yes", "if-necessary", "no"),
-        "example_quantity": ("multiple", "single"),
-        "practice_problems": (bool, str),
-        "input_modality": ("reading", "audio", "mixed"),
-        "summary_preference": (bool, str),
-        "diagram_preference": (bool, str)
-    },
-
-    # SECTION 4 — COMMUNICATION STYLE
-
+    # SECTION 3 - COMMUNICATION STYLE (how to talk to them)
     "communication_style": {
-        "response_depth": ("quick", "deep"),
-        "question_engagement": bool,
-        "writing_style": ("formal", "conversational"),
-        "study_focus": ("exploratory", "focused"),
-        "explanation_style": ("simple", "technical"),
-        "format_preference": ("visual", "verbal"),
-        "learning_approach": ("active", "reflective"),
-        "feedback_style": ("supportive", "direct"),
-        "structure_preference": ("narrative", "structured"),
-        "example_type_preference": ("real-world", "abstract")
+      "tone": ["formal", "conversational"],
+      "feedback_style": ["supportive", "direct"],
+      "response_depth": ["quick", "detailed"],
+      "question_engagement": "bool"
     },
 
-    # SECTION 5 — ACADEMIC EMOTIONS & STUDY BEHAVIOR
+    # SECTION 4 - EMOTIONAL PATTERNS (how they handle difficulty)
+    "emotional_patterns": {
+      "stress_response": ["push-through", "pause", "avoid", "depends"],
+      "overwhelm_support": ["encouragement", "step-by-step", "break"],
+      "confidence_level": "int (1-10)",
+      "motivation_drivers": "string",
+      "common_blockers": "string"
+    },
 
-    "academic_emotions_and_behavior": {
-        "stuck_frequency": int,
-        "post_challenge_behavior": ("continue", "break", "stop"),
-        "mood_sharing_comfort": int,
-        "overwhelm_support_preference": ("encouragement", "step-by-step", "break"),
-        "study_method_confidence": int, 
-        "stress_response": ("push-through", "pause", "avoid", "depends"),
-        "help_seeking_behavior": (
-            "very-comfortable",
-            "comfortable",
-            "slightly-uncomfortable",
-            "very-uncomfortable"
-        ),
-        "motivation_drain": (
-            "confusion",
-            "overwhelm",
-            "lack-progress",
-            "low-interest"
-        ),
-        "focus_recovery_strategy": (
-            "short-break",
-            "task-switch",
-            "goal-review",
-            "external-reminder"
-        ),
-        "tone_sensitivity": int,               
-        "post_confidence_behavior": (
-            "advance",
-            "reinforce",
-            "switch",
-            "stop"
-        ),
-        "anxiety_impact": int 
-    }
+    # SECTION 5 - STUDY BEHAVIOR (patterns and habits)
+    "study_behavior": {
+      "study_rhythm": ["regular", "cramming", "mixed"],
+      "focus_duration": "string",
+      "attention_span": "int (1-10)",
+      "recovery_strategy": ["short-break", "task-switch", "goal-review", "external-reminder"],
+      "mistake_handling": ["immediate-fix", "deferred"]
+    },
+
+    # SUMMARY
+    "summary": "string"
+  }
 }

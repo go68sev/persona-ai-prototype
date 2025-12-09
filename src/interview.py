@@ -12,10 +12,10 @@ RESPONSES_FILE = os.path.join(BASE_DIR, "profiles", "interviewResponse.json")  #
 os.makedirs(os.path.join(BASE_DIR, "profiles"), exist_ok=True)
 
 # --------------------- Step 1: Load Questions ---------------------
-with open(QUESTIONS_FILE, "r") as f:
+with open(QUESTIONS_FILE, "r", encoding="utf-8") as f:
     questions_data = json.load(f)
 
-sections = [key for key in questions_data.keys() if key not in ["OPENING SCRIPT", "Closing SCRIPT"]]
+sections = [key for key in questions_data.keys() if key not in ["OPENING SCRIPT", "CLOSING SCRIPT"]]
 
 # --------------------- Step 2: Initialize Session State ---------------------
 for key, default in {
@@ -74,16 +74,14 @@ if st.session_state.section_idx == -1:
 if st.session_state.section_idx >= len(sections):
     if not st.session_state.closing_displayed:
         st.session_state.closing_displayed = True
-        typing_effect(questions_data["Closing SCRIPT"]["script"])
+        typing_effect(questions_data["CLOSING SCRIPT"]["script"])
     
     st.success("🎉 Interview Completed!")
-    st.json(st.session_state.responses)
 
     # Save responses to JSON inside profiles folder
-    with open(RESPONSES_FILE, "w") as json_file:
+    with open(RESPONSES_FILE, "w", encoding="utf-8") as json_file:
         json.dump(st.session_state.responses, json_file, indent=4)
-    st.write(f"✅ Responses saved to `{RESPONSES_FILE}`")
-    
+    st.write("✅ Your interview responses have been saved to your profile!")    
     st.stop()
 
 current_section = sections[st.session_state.section_idx]
@@ -117,12 +115,28 @@ if current_q["type"] == "text":
 elif current_q["type"] == "mcq":
     st.markdown(f'<p class="big-question">{current_q["question"]}</p>', unsafe_allow_html=True)
     options = current_q.get("options", [])
-    default_index = options.index(existing_response) if existing_response in options else 0
-    response = st.radio("", options, index=default_index, label_visibility="collapsed")
+    # FIX 1: Only set default_index if there's an existing response, otherwise use None
+    if existing_response and existing_response in options:
+        default_index = options.index(existing_response)
+        response = st.radio("", options, index=default_index, label_visibility="collapsed", key=f"mcq_{response_key}")
+    else:
+        # Use index=None to force user to make a selection
+        response = st.radio("", options, index=None, label_visibility="collapsed", key=f"mcq_{response_key}")
 elif current_q["type"] == "rating":
     st.markdown(f'<p class="big-question">{current_q["question"]}</p>', unsafe_allow_html=True)
-    default_value = existing_response if existing_response else 1
-    response = st.slider("", 1, current_q["scale"], value=default_value, label_visibility="collapsed")
+    # FIX 2: Use the existing response or default to the minimum value, with unique key
+    default_value = existing_response if existing_response is not None else 0
+    scale_labels = current_q.get("scale_labels", {})
+    min_label = scale_labels.get("0", "")
+    max_label = scale_labels.get("10", "") if current_q["scale"] == 10 else scale_labels.get(str(current_q["scale"]), "")
+    if min_label or max_label:
+        col_left, col_right = st.columns([1, 1])
+        with col_left:
+            st.caption(f"0 = {min_label}")
+        with col_right:
+            st.markdown(f"<div style='text-align: right;'><small>{current_q['scale']} = {max_label}</small></div>", unsafe_allow_html=True)
+    # Add unique key based on response_key to prevent value carryover
+    response = st.slider("", 0, current_q["scale"], value=default_value, label_visibility="collapsed", key=f"slider_{response_key}")
 
 # Check if question is mandatory
 is_mandatory = True
@@ -157,7 +171,7 @@ if show_previous:
                     error_msg = "⚠️ Please answer this question before proceeding."
                 elif current_q["type"] == "mcq" and not response:
                     error_msg = "⚠️ Please select an option before proceeding."
-                elif current_q["type"] == "rating" and not response:
+                elif current_q["type"] == "rating" and response is None:
                     error_msg = "⚠️ Please provide a rating before proceeding."
                 
                 if error_msg:
@@ -184,7 +198,7 @@ else:
                     error_msg = "⚠️ Please answer this question before proceeding."
                 elif current_q["type"] == "mcq" and not response:
                     error_msg = "⚠️ Please select an option before proceeding."
-                elif current_q["type"] == "rating" and not response:
+                elif current_q["type"] == "rating" and response is None:
                     error_msg = "⚠️ Please provide a rating before proceeding."
                 
                 if error_msg:

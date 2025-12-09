@@ -143,27 +143,31 @@ persona-ai-prototype/
 │
 ├── src/                    # Main application code
 │   ├── __init__.py
-│   ├── app.py             # Streamlit UI
-│   ├── interview.py       # Interview module
+│   ├── app.py                  # Streamlit UI and main application
+│   ├── interview.py            # Interview module
 │   ├── extract_preferences.py  # LLM preference extraction
 │   ├── generate_content.py     # Personalized content generation
-│   └── utils.py           # Helper functions
+│   ├── preference_parameters.py # Preference parameter definitions
+│   ├── user_profile_schema.py  # User profile data schema
+│   └── utils.py                # Helper functions
 │
-├── profiles/              # User preference profiles
-│   ├── .gitkeep          # Keeps folder in Git
-│   └── *.json            # User profiles (ignored by Git)
+├── profiles/               # User preference profiles
+│   ├── .gitkeep           # Keeps folder in Git (empty file)
+│   └── *.json             # User profiles (ignored by Git)
 │
-├── docs/                  # Documentation
-│   ├── interview_protocol.md
-│   ├── evaluation_plan.md
-│   └── api_documentation.md
+├── docs/                   # Documentation and data
+│   └── interviewQuestions.json # Interview questions database
 │
-├── tests/                 # Test files
-│   ├── test_extraction.py
-│   └── test_generation.py
+├── tests/                  # Test files
+│   ├── test_extraction.py # Tests for preference extraction
+│   └── test_generation.py # Tests for content generation
 │
-└── practice/              # Learning exercises (Week 1-2)
-    └── hello_openai.py
+└── practice/               # Week 4 learning exercises - different practice content
+    ├── temp.py            # Temporary testing/development file
+    ├── test_1.py          # Practice exercise 1
+    ├── test_2.py          # Practice exercise 2
+    ├── test_3.py          # Practice exercise 3
+    └── test_4.py          # Practice exercise 4
 ```
 
 ---
@@ -186,8 +190,8 @@ This project is developed by a team of 5 students for the course **"Enhancing Da
 
 ### Month 1: Foundation (Weeks 1-4)
 - [x] Week 1: Setup, research, basic API integration
-- [ ] Week 2: Interview system, preference extraction
-- [ ] Week 3: Preference validation interface (Checkpoint 1)
+- [x] Week 2: Interview system, preference extraction
+- [x] Week 3: Preference validation interface (Checkpoint 1)
 - [ ] Week 4: Basic personalized content generation
 
 **Milestone:** MVP 1.0 - Static profile system working
@@ -253,4 +257,4 @@ This is an educational project developed for academic purposes at Technical Univ
 
 **Built with ❤️ by Team Persona AI**
 
-*Last updated: 19/11/2025*
+*Last updated: 03/12/2025*
