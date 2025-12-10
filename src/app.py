@@ -10,6 +10,8 @@ FIXES APPLIED:
 3. Improved error handling throughout
 4. Better integration with extract_preferences.py
 5. Added save functionality to edit profile
+6. Fixed tab navigation to AI Learning Profile after interview completion
+7. Fixed list values display (converting ['value'] to 'value')
 """
 
 import streamlit as st
@@ -81,12 +83,20 @@ if "page" not in st.session_state:
     st.session_state.page = "interview"
 if "interview_completed" not in st.session_state:
     st.session_state.interview_completed = False
-# if st.session_state.interview_completed == True:
-#     st.session_state.page = "chatbot"
-
+if "selected_profile_tab" not in st.session_state:
+    st.session_state.selected_profile_tab = 0  # 0 = Your Profile, 1 = AI Learning Profile
+if "force_regenerate" not in st.session_state:
+    st.session_state.force_regenerate = False
 
 if os.path.exists(RESPONSES_FILE) and os.path.getsize(RESPONSES_FILE) > 0:
     st.session_state.interview_completed = True
+
+# --------------------- Helper Function for Clean Display ---------------------
+def clean_value(val):
+    """Convert list values to clean strings for display"""
+    if isinstance(val, list):
+        return ", ".join(str(v) for v in val) if val else "N/A"
+    return val if val else "N/A"
 
 # --------------------- Load Data Helpers ---------------------
 def load_responses():
@@ -151,19 +161,23 @@ def load_extracted_preferences():
 def run_extract_preferences():
     """Run the preference extraction module."""
     try:
-        if not os.path.exists(EXTRACT_PREFS_PY_PATH):
-            st.error(f"❌ Extract preferences script not found at: {EXTRACT_PREFS_PY_PATH}")
-            return None
-
-        if not os.path.exists(EXTRACTED_PREFS_FILE):
-            with st.spinner("🔄 Generating AI learning profile..."):
-                spec = importlib.util.spec_from_file_location("extract_preferences", EXTRACT_PREFS_PY_PATH)
-                extract_module = importlib.util.module_from_spec(spec)
-                spec.loader.exec_module(extract_module)
+        # Import the silent extraction function
+        from extract_preferences import extract_profile_silently
+        
+        with st.spinner("🔄 Generating AI learning profile..."):
+            result = extract_profile_silently()
+        
+        if result:
             st.toast("✨ AI Profile generated successfully!", icon="🤖")
+            time.sleep(1)
             st.rerun()
+        else:
+            st.error("❌ Failed to generate profile. Please check your responses and try again.")
+            return None
+            
     except ImportError as e:
         st.error(f"❌ Failed to import extraction module: {str(e)}")
+        st.info("Make sure extract_preferences.py exists in the src folder.")
         return None
     except Exception as e:
         st.error(f"❌ Failed to generate profile: {str(e)}")
@@ -187,25 +201,43 @@ def profile_page():
             st.rerun()
         st.stop()
 
-    tab1, tab2 = st.tabs(["📖 Your Profile", "🎯 AI Learning Profile"])
+    # Custom tab selector using buttons
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        if st.button("📖 Your Profile", 
+                    type="primary" if st.session_state.selected_profile_tab == 0 else "secondary",
+                    use_container_width=True):
+            st.session_state.selected_profile_tab = 0
+            st.rerun()
+    
+    with col2:
+        if st.button("🎯 AI Learning Profile", 
+                    type="primary" if st.session_state.selected_profile_tab == 1 else "secondary",
+                    use_container_width=True):
+            st.session_state.selected_profile_tab = 1
+            st.rerun()
+    
+    st.markdown("---")
 
-    # ------------------ TAB 1: Editable Profile ------------------
-    with tab1:
+    # Display content based on selected tab
+    if st.session_state.selected_profile_tab == 0:
+        # ------------------ TAB 1: Editable Profile ------------------
         st.info("💡 You can edit your answers directly below. Click save when done.")
-        updated_responses = {}   # preparing to Store Updated Responses
+        updated_responses = {}
 
         # Group responses by section
         sections_dict = {}
         for key, value in responses.items():
-            section_name = key.rsplit("-", 1)[0]  # removes the question index to get the section name
+            section_name = key.rsplit("-", 1)[0]
             sections_dict.setdefault(section_name, []).append((key, value))
 
-        for section, items in sections_dict.items():  # Loop through sections
+        for section, items in sections_dict.items():
             st.markdown(f"### 🗂 {section}")
-            num_cols = 2   # display 2 questions side by side
+            num_cols = 2
             for i in range(0, len(items), num_cols):
                 cols = st.columns(num_cols)
-                for j, (key, value) in enumerate(items[i:i+num_cols]):  # Loop through questions in the section
+                for j, (key, value) in enumerate(items[i:i+num_cols]):
                     question_idx = int(key.split("-")[-1])
 
                     # Safe access to question text
@@ -215,7 +247,7 @@ def profile_page():
                     else:
                         question_text = "Question not found"
 
-                    with cols[j]:    # Display the question
+                    with cols[j]:
                         st.markdown(
                             f"""
                             <div style='background-color:#E0F7FA; padding:12px; border-radius:12px; margin-bottom:4px;'>
@@ -224,18 +256,18 @@ def profile_page():
                             """,
                             unsafe_allow_html=True
                         )
-
+                        
                         # Unique keys for widgets
                         if isinstance(value, (int, float)) and 1 <= value <= 10:
                             updated_responses[key] = st.slider(
-                                "", 1, 10, int(value), key=f"slider_{key}"  # If the previous answer is numeric (1–10), show a slider.
+                                "", 1, 10, int(value), key=f"slider_{key}"
                             )
                         else:
                             updated_responses[key] = st.text_area(
-                                "", value=value, height=80, key=f"text_area_{key}"  # Otherwise, show a text area for free text input.
+                                "", value=value, height=80, key=f"text_area_{key}"
                             )
 
-                        st.markdown("<div style='margin-bottom:15px;'></div>", unsafe_allow_html=True)  # vertical spacing after each question
+                        st.markdown("<div style='margin-bottom:15px;'></div>", unsafe_allow_html=True)
 
         # Save button
         st.markdown("---")
@@ -246,19 +278,19 @@ def profile_page():
                     # Remove old file if it exists
                     if os.path.exists(RESPONSES_FILE):
                         os.remove(RESPONSES_FILE)
-                    
-                    # Save new responses
+
+                    # Save new responses                    
                     with open(RESPONSES_FILE, "w", encoding="utf-8") as f:
                         json.dump(updated_responses, f, indent=4)
-                    
-                    # Also remove extracted preferences so it regenerates with new data
+
+                    # Also remove extracted preferences so it regenerates with new data                    
                     if os.path.exists(EXTRACTED_PREFS_FILE):
                         os.remove(EXTRACTED_PREFS_FILE)
                     
                     st.success("✅ Your profile has been updated successfully!")
                     st.info("🔄 AI Learning Profile will regenerate with your new responses.")
                     
-                    # Wait a moment for user to see the message
+                    # Wait a moment for user to see the message                    
                     time.sleep(1.5)
                     st.rerun()
                     
@@ -267,20 +299,34 @@ def profile_page():
                 except Exception as e:
                     st.error(f"❌ Error saving changes: {str(e)}")
 
-    # ------------------ TAB 2: AI Learning Profile ------------------
-    # FIXED: Now correctly maps to USER_PROFILE_SCHEMA structure
-    with tab2:
+    else:
+        # ------------------ TAB 2: AI Learning Profile ------------------
         st.subheader("🧠 Personalized AI Learning Profile")
+        
+        # Check if we should force regeneration (coming from interview)
+        should_generate = False
+        if st.session_state.force_regenerate:
+            if os.path.exists(EXTRACTED_PREFS_FILE):
+                os.remove(EXTRACTED_PREFS_FILE)
+            st.session_state.force_regenerate = False
+            should_generate = True
+        
         extracted_prefs = load_extracted_preferences()
 
+        # Auto-generate if coming from interview or if profile doesn't exist
+        if (should_generate or extracted_prefs is None):
+            st.info("⚙️ Generating your AI learning profile...")
+            run_extract_preferences()
+            extracted_prefs = load_extracted_preferences()
+        
         if extracted_prefs:
-            # Get the learning_profile data (handle both nested and flat structures)
+             # Get the learning_profile data (handle both nested and flat structures)
             lp = extracted_prefs.get("learning_profile", extracted_prefs)
 
             st.success("🎉 AI-generated learning profile found!")
 
-            # ===== SUMMARY (Top of page) =====
-            summary = safe_get(lp, "summary", default="No summary generated.")
+            # ===== SUMMARY =====
+            summary = clean_value(safe_get(lp, "summary", default="No summary generated."))
             st.markdown(
                 f"""
                 <div style="background: linear-gradient(to right, #FFF3E0, #FFE0B2);
@@ -296,14 +342,14 @@ def profile_page():
             # ===== SECTION 1: BACKGROUND =====
             st.markdown("### 📚 Background")
             bg = lp.get("background", {})
-            col1, col2 = st.columns(2)  # Uses 2 columns to display related info side by side.
+            col1, col2 = st.columns(2)
             with col1:
                 st.markdown(
                     f"""
                     <div style="background-color:#E3F2FD; padding:15px; border-radius:12px; margin-bottom:10px;">
-                        <b>Academic Program:</b> {safe_get(bg, "academic_program")}<br>
-                        <b>Semester:</b> {safe_get(bg, "semester")}<br>
-                        <b>Age:</b> {safe_get(bg, "age")}
+                        <b>Academic Program:</b> {clean_value(safe_get(bg, "academic_program"))}<br>
+                        <b>Semester:</b> {clean_value(safe_get(bg, "semester"))}<br>
+                        <b>Age:</b> {clean_value(safe_get(bg, "age"))}
                     </div>
                     """,
                     unsafe_allow_html=True,
@@ -312,8 +358,8 @@ def profile_page():
                 st.markdown(
                     f"""
                     <div style="background-color:#E8F5E9; padding:15px; border-radius:12px; margin-bottom:10px;">
-                        <b>Current Focus:</b> {safe_get(bg, "current_focus")}<br>
-                        <b>Goals:</b> {safe_get(bg, "goals")}
+                        <b>Current Focus:</b> {clean_value(safe_get(bg, "current_focus"))}<br>
+                        <b>Goals:</b> {clean_value(safe_get(bg, "goals"))}
                     </div>
                     """,
                     unsafe_allow_html=True,
@@ -327,10 +373,10 @@ def profile_page():
 
             # Key preferences as badges
             prefs_list = [
-                f"Explanation: {safe_get(lprefs, 'explanation_preference')}",
-                f"Examples: {safe_get(lprefs, 'examples_preference')}",
-                f"Guidance: {safe_get(lprefs, 'guidance_preference')}",
-                f"Style: {safe_get(lprefs, 'presentation_style')}",
+                f"Explanation: {clean_value(safe_get(lprefs, 'explanation_preference'))}",
+                f"Examples: {clean_value(safe_get(lprefs, 'examples_preference'))}",
+                f"Guidance: {clean_value(safe_get(lprefs, 'guidance_preference'))}",
+                f"Style: {clean_value(safe_get(lprefs, 'presentation_style'))}",
             ]
             prefs_html = "".join(
                 f"<span style='background-color:#E8F4FD; padding:5px 12px; margin:4px; border-radius:15px; display:inline-block;'>{p}</span>"
@@ -371,7 +417,7 @@ def profile_page():
                 st.markdown(
                     f"""
                     <div style="background-color:#F3E5F5; padding:12px; border-radius:10px; margin-top:10px;">
-                        <b>Code Examples:</b> {safe_get(lprefs, "code_examples")}
+                        <b>Code Examples:</b> {clean_value(safe_get(lprefs, "code_examples"))}
                     </div>
                     """,
                     unsafe_allow_html=True,
@@ -387,8 +433,8 @@ def profile_page():
                 st.markdown(
                     f"""
                     <div style="background-color:#E8F5E9; padding:15px; border-radius:12px;">
-                        <b>Tone:</b> {safe_get(cs, "tone")}<br>
-                        <b>Feedback Style:</b> {safe_get(cs, "feedback_style")}
+                        <b>Tone:</b> {clean_value(safe_get(cs, "tone"))}<br>
+                        <b>Feedback Style:</b> {clean_value(safe_get(cs, "feedback_style"))}
                     </div>
                     """,
                     unsafe_allow_html=True,
@@ -397,7 +443,7 @@ def profile_page():
                 st.markdown(
                     f"""
                     <div style="background-color:#FFF3E0; padding:15px; border-radius:12px;">
-                        <b>Response Depth:</b> {safe_get(cs, "response_depth")}<br>
+                        <b>Response Depth:</b> {clean_value(safe_get(cs, "response_depth"))}<br>
                         <b>Question Engagement:</b> {format_bool(cs.get("question_engagement"))}
                     </div>
                     """,
@@ -414,8 +460,8 @@ def profile_page():
                 st.markdown(
                     f"""
                     <div style="background-color:#FFEBEE; padding:15px; border-radius:12px;">
-                        <b>Stress Response:</b> {safe_get(ep, "stress_response")}<br>
-                        <b>Overwhelm Support:</b> {safe_get(ep, "overwhelm_support")}
+                        <b>Stress Response:</b> {clean_value(safe_get(ep, "stress_response"))}<br>
+                        <b>Overwhelm Support:</b> {clean_value(safe_get(ep, "overwhelm_support"))}
                     </div>
                     """,
                     unsafe_allow_html=True,
@@ -424,13 +470,13 @@ def profile_page():
                 st.markdown(
                     f"""
                     <div style="background-color:#E8F5E9; padding:15px; border-radius:12px;">
-                        <b>Motivation Drivers:</b> {safe_get(ep, "motivation_drivers")}<br>
-                        <b>Common Blockers:</b> {safe_get(ep, "common_blockers")}
+                        <b>Motivation Drivers:</b> {clean_value(safe_get(ep, "motivation_drivers"))}<br>
+                        <b>Common Blockers:</b> {clean_value(safe_get(ep, "common_blockers"))}
                     </div>
                     """,
                     unsafe_allow_html=True,
                 )
-
+            
             # Confidence level progress bar
             confidence = ep.get("confidence_level")
             if confidence and isinstance(confidence, (int, float)):
@@ -451,8 +497,8 @@ def profile_page():
                 st.markdown(
                     f"""
                     <div style="background-color:#E3F2FD; padding:15px; border-radius:12px;">
-                        <b>Study Rhythm:</b> {safe_get(sb, "study_rhythm")}<br>
-                        <b>Focus Duration:</b> {safe_get(sb, "focus_duration")}
+                        <b>Study Rhythm:</b> {clean_value(safe_get(sb, "study_rhythm"))}<br>
+                        <b>Focus Duration:</b> {clean_value(safe_get(sb, "focus_duration"))}
                     </div>
                     """,
                     unsafe_allow_html=True,
@@ -461,14 +507,13 @@ def profile_page():
                 st.markdown(
                     f"""
                     <div style="background-color:#FFF8E1; padding:15px; border-radius:12px;">
-                        <b>Recovery Strategy:</b> {safe_get(sb, "recovery_strategy")}<br>
-                        <b>Mistake Handling:</b> {safe_get(sb, "mistake_handling")}
+                        <b>Recovery Strategy:</b> {clean_value(safe_get(sb, "recovery_strategy"))}<br>
+                        <b>Mistake Handling:</b> {clean_value(safe_get(sb, "mistake_handling"))}
                     </div>
                     """,
                     unsafe_allow_html=True,
                 )
-
-            # Attention span progress bar
+            
             attention = sb.get("attention_span")
             if attention and isinstance(attention, (int, float)):
                 st.markdown("**Attention Span:**")
@@ -489,8 +534,9 @@ def profile_page():
                 except Exception as e:
                     st.error(f"❌ Could not delete profile: {e}")
         else:
-            st.info("⚙️ No AI profile found. Generating now...")
-            run_extract_preferences()
+            st.warning("⚠️ Could not load the generated profile. Please try regenerating.")
+            if st.button("🔄 Try Again"):
+                st.rerun()
 
 # --------------------- Interview Page ---------------------
 def interview_page():
@@ -520,7 +566,7 @@ def chatbot_page():
         spec = importlib.util.spec_from_file_location("chatbot", CHATBOT_PY_PATH)
         chatbot_module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(chatbot_module)
-
+        
         # Call the chatbot UI function
         if hasattr(chatbot_module, "generate_content"):
             chatbot_module.generate_content()
@@ -529,7 +575,7 @@ def chatbot_page():
 
     except Exception as e:
         st.error(f"❌ Error loading chatbot: {str(e)}")
-
+        
 # --------------------- Feedback Page ---------------------
 def feedback_page():
     """Load and run the Feedback."""
@@ -556,6 +602,7 @@ def main():
                 st.rerun()
             if st.button("👤 View Profile"):
                 st.session_state.page = "profile"
+                st.session_state.selected_profile_tab = 0
                 st.rerun()
             if st.button("💬 Chat with Persona"):
                 st.session_state.page = "chatbot"
@@ -581,3 +628,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    

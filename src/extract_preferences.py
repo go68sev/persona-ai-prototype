@@ -1,12 +1,13 @@
 """
 extract_preferences.py - Learning Profile Extraction
 
-This Streamlit app takes interview responses and uses GPT-4o-mini to
-extract a structured learning profile. The profile is displayed as
-nice formatted tables and saved to JSON.
+This module can work in two modes:
+1. Standalone Streamlit app: streamlit run src/extract_preferences.py
+2. Imported module: Called from app.py without UI elements
 
 Usage:
-    streamlit run src/extract_preferences.py
+    Standalone: streamlit run src/extract_preferences.py
+    As module: from extract_preferences import extract_profile_silently
 """
 
 import streamlit as st
@@ -41,7 +42,6 @@ def show_progress_bar(label, value, max_value=10):
         st.markdown(f"**{label}:** N/A")
         return
 
-    # Three columns: label | progress bar | value text
     col1, col2, col3 = st.columns([2, 3, 1])
     with col1:
         st.markdown(f"**{label}**")
@@ -54,14 +54,10 @@ def show_progress_bar(label, value, max_value=10):
 def create_styled_table(data_dict):
     """
     Create a styled pandas DataFrame table from a dictionary.
-    - No index numbers
-    - Consistent column widths
-    - Clean headers
     """
     if not data_dict:
         return None
 
-    # Clean up keys and values for display
     rows = []
     for k, v in data_dict.items():
         clean_key = k.replace("_", " ").title()
@@ -77,20 +73,16 @@ def create_styled_table(data_dict):
 
         rows.append({"": clean_key, " ": clean_value})
 
-    # Create DataFrame without named columns (cleaner look)
     df = pd.DataFrame(rows)
-
     return df
 
 
 def display_table(data_dict):
     """
     Display a table with consistent styling.
-    Hides index and uses full width.
     """
     df = create_styled_table(data_dict)
     if df is not None:
-        # Hide the index using pandas Styler
         st.dataframe(
             df,
             hide_index=True,
@@ -98,21 +90,10 @@ def display_table(data_dict):
         )
 
 
-
-# ============================================================
-# DISPLAY FUNCTION: Show Profile as Nice Tables
-# ============================================================
-
 def display_profile_tables(profile):
     """
     Displays the extracted learning profile as nicely formatted tables.
-    Single column layout with pandas tables for each section.
-
-    Args:
-        profile: Dictionary containing the extracted learning profile
     """
-
-    # Get the learning_profile data (handle both nested and flat structures)
     if "learning_profile" in profile:
         data = profile["learning_profile"]
     else:
@@ -147,8 +128,6 @@ def display_profile_tables(profile):
             "code_examples": lp.get("code_examples", "N/A"),
         }
         display_table(lp_table)
-
-        # Progress bar for detail level
         show_progress_bar("Detail Level", lp.get("detail_level"))
 
     st.divider()
@@ -178,8 +157,6 @@ def display_profile_tables(profile):
             "common_blockers": ep.get("common_blockers", "N/A"),
         }
         display_table(ep_table)
-
-        # Progress bar for confidence level
         show_progress_bar("Confidence Level", ep.get("confidence_level"))
 
     st.divider()
@@ -195,8 +172,6 @@ def display_profile_tables(profile):
             "mistake_handling": sb.get("mistake_handling", "N/A"),
         }
         display_table(sb_table)
-
-        # Progress bar for attention span
         show_progress_bar("Attention Span", sb.get("attention_span"))
 
     st.divider()
@@ -207,22 +182,10 @@ def display_profile_tables(profile):
     st.info(summary)
 
 
-# ============================================================
-# PROMPT BUILDER: Creates the LLM Extraction Prompt
-# ============================================================
-
 def build_extraction_prompt(responses):
     """
-    Builds a detailed prompt that helps the LLM extract preferences
-    from open-ended interview responses accurately.
-
-    Args:
-        responses: Dictionary containing the interview responses
-
-    Returns:
-        str: The complete prompt to send to the LLM
+    Builds a detailed prompt that helps the LLM extract preferences.
     """
-
     prompt = f"""You are an expert educational psychologist analyzing a student's interview responses to build their personalized learning profile.
 
 ## YOUR TASK
@@ -333,64 +296,99 @@ Write a 2-3 sentence paragraph that captures the student's overall learning pers
 ## OUTPUT FORMAT
 Return ONLY valid JSON that matches the schema structure. No markdown code fences, no explanations, just the JSON object.
 """
-
     return prompt
 
 
 # ============================================================
-# MAIN STREAMLIT APP
+# CORE EXTRACTION FUNCTION (Can be imported silently)
 # ============================================================
 
-st.set_page_config(page_title="Preference Extraction", page_icon="🎯", layout="wide")
-
-st.title("🎯 Preference Extraction AI")
-st.markdown("*Transforming your interview responses into a personalized learning profile*")
-
-# --- Check if interview responses exist ---
-if not os.path.exists(RESPONSES_FILE):
-    st.error("❌ No interview responses found!")
-    st.info("Please complete the interview first. The system is looking for: `interviewResponse.json`")
-    st.stop()
-
-# --- Load interview responses ---
-with open(RESPONSES_FILE, "r", encoding="utf-8") as f:
-    responses = json.load(f)
-
-# --- Show loaded responses in expandable section ---
-with st.expander("📄 View Raw Interview Responses", expanded=False):
-    st.json(responses)
-
-st.markdown("---")
-
-# --- Main extraction button ---
-if st.button("✨ Extract My Learning Profile", type="primary", use_container_width=True):
-
-    with st.spinner("🔍 Analyzing your responses... This may take a moment."):
+def extract_profile_silently(responses=None):
+    """
+    Core extraction function that can be called without Streamlit UI.
+    
+    Args:
+        responses: Dictionary of interview responses. If None, loads from file.
+        
+    Returns:
+        Extracted profile dictionary, or None if failed
+    """
+    try:
+        # Load responses if not provided
+        if responses is None:
+            if not os.path.exists(RESPONSES_FILE):
+                return None
+            with open(RESPONSES_FILE, "r", encoding="utf-8") as f:
+                responses = json.load(f)
 
         # Build the prompt
         extraction_prompt = build_extraction_prompt(responses)
 
         # Call OpenAI API
-        try:
-            response = client.chat.completions.create(
-                model="gpt-4o-mini",
-                messages=[{"role": "user", "content": extraction_prompt}]
-            )
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{"role": "user", "content": extraction_prompt}]
+        )
 
-            # Extract text from response (using helper from utils.py)
-            ai_text = extract_text(response)
+        # Extract text from response
+        ai_text = extract_text(response)
 
-            if ai_text is None:
-                st.error("❌ AI returned an empty response. Please try again.")
-                st.stop()
+        if ai_text is None:
+            return None
 
-            # Parse JSON (using helper from utils.py)
-            parsed = safe_json_loads(ai_text)
+        # Parse JSON
+        parsed = safe_json_loads(ai_text)
+
+        if parsed is None:
+            return None
+
+        # Save to file
+        with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
+            json.dump(parsed, f, indent=4)
+
+        return parsed
+
+    except Exception as e:
+        print(f"Error in extraction: {str(e)}")
+        return None
+
+
+# ============================================================
+# MAIN STREAMLIT APP (Only runs when executed directly)
+# ============================================================
+
+def main():
+    st.set_page_config(page_title="Preference Extraction", page_icon="🎯", layout="wide")
+
+    st.title("🎯 Preference Extraction AI")
+    st.markdown("*Transforming your interview responses into a personalized learning profile*")
+
+    # --- Check if interview responses exist ---
+    if not os.path.exists(RESPONSES_FILE):
+        st.error("❌ No interview responses found!")
+        st.info("Please complete the interview first. The system is looking for: `interviewResponse.json`")
+        st.stop()
+
+    # --- Load interview responses ---
+    with open(RESPONSES_FILE, "r", encoding="utf-8") as f:
+        responses = json.load(f)
+
+    # --- Show loaded responses in expandable section ---
+    with st.expander("📄 View Raw Interview Responses", expanded=False):
+        st.json(responses)
+
+    st.markdown("---")
+
+    # --- Main extraction button ---
+    if st.button("✨ Extract My Learning Profile", type="primary", use_container_width=True):
+
+        with st.spinner("🔍 Analyzing your responses... This may take a moment."):
+
+            # Use the core extraction function
+            parsed = extract_profile_silently(responses)
 
             if parsed is None:
                 st.error("❌ Could not parse AI response as JSON.")
-                with st.expander("🔧 Debug: Raw AI Response"):
-                    st.code(ai_text)
                 st.stop()
 
             # Success! Display the profile
@@ -406,16 +404,12 @@ if st.button("✨ Extract My Learning Profile", type="primary", use_container_wi
             with st.expander("🔧 View Raw JSON", expanded=False):
                 st.json(parsed)
 
-            # Save to file
-            with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
-                json.dump(parsed, f, indent=4)
-
             st.success(f"💾 Profile saved to `{OUTPUT_FILE}`")
 
-        except Exception as e:
-            st.error(f"❌ Error calling OpenAI API: {str(e)}")
-            st.info("Make sure your OPENAI_API_KEY is set correctly in your .env file")
+    # --- Footer ---
+    st.markdown("---")
+    st.caption("Built with ❤️ for personalized learning | Persona AI Project")
 
-# --- Footer ---
-st.markdown("---")
-st.caption("Built with ❤️ for personalized learning | Persona AI Project")
+
+if __name__ == "__main__":
+    main()
