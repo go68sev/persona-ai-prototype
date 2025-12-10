@@ -184,7 +184,7 @@ def generate_content():
     chat_by_date = st.session_state.chat_history[subject]
     today = datetime.now().strftime("%Y-%m-%d")
 
-    if not chat_by_date:
+    if today not in chat_by_date:
         chat_by_date[today] = []
 
     chat_dates = sorted(chat_by_date.keys(), reverse=True)
@@ -236,7 +236,8 @@ def generate_content():
                          + chat_by_date[active_date],
                 temperature=0.7,
             )
-            ai_message = response.choices[0].message.content
+            ai_message =  response.choices[0].message.content
+            print("AI Response:", ai_message)
 
             chat_by_date[active_date].append({
                 "role": "assistant",
@@ -244,14 +245,14 @@ def generate_content():
                 "timestamp": datetime.now().isoformat(),
                 "feedback": {"thumbs_up": 0, "thumbs_down": 0}
             })
-            save_chat(subject, "assistant", chat_by_date[active_date][-1])
+            save_chat(subject, "assistant", ai_message)
 
         except Exception as e:
             ai_message = f"❌ Error generating response: {str(e)}"
             st.error(ai_message)
             chat_by_date[active_date].append({
                 "role": "assistant",
-                "content": ai_message,
+                "content": 'Error generating response.',
                 "timestamp": datetime.now().isoformat(),
                 "feedback": {"thumbs_up": 0, "thumbs_down": 0}
             })

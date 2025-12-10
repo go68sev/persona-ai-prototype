@@ -19,16 +19,22 @@ USER_PROFILE_SCHEMA = {
       "uses_analogies": "bool",
       "presentation_style": ["visual", "verbal", "mixed"],
       "practice_problems": "bool",
-      "code_examples": ["yes", "if-necessary", "no"]
+      "code_examples": ["yes", "if-necessary", "no"],
+      "pacing": ["fast", "moderate", "slow-thorough"],
+      "learner_type": ["analytical", "intuitive", "example-driven", "pattern-based", "sequential"],
+      "examples_preference": ["real-world", "mathematical", "code-based", "analogies", "diagrams", "mixed"],
+      "repetition_preference": ["spaced-repetition", "repeated-summaries", "minimal-repetition"],
     },
 
 
     # SECTION 3 - COMMUNICATION STYLE (how to talk to them)
     "communication_style": {
       "tone": ["formal", "conversational"],
-      "feedback_style": ["supportive", "direct"],
+      "feedback_style": ["supportive-gentle", "supportive-direct", "direct-critical"],
       "response_depth": ["quick", "detailed"],
-      "question_engagement": "bool"
+      "question_engagement": "bool",
+      "summaries_after_explanation": "bool",
+
     },
 
     # SECTION 4 - EMOTIONAL PATTERNS (how they handle difficulty)
@@ -37,7 +43,8 @@ USER_PROFILE_SCHEMA = {
       "overwhelm_support": ["encouragement", "step-by-step", "break"],
       "confidence_level": "int (1-10)",
       "motivation_drivers": "string",
-      "common_blockers": "string"
+      "common_blockers": "string",
+      "learning_challenges": "string",  
     },
 
     # SECTION 5 - STUDY BEHAVIOR (patterns and habits)

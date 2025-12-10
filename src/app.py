@@ -30,6 +30,7 @@ QUESTIONS_FILE = os.path.join(BASE_DIR, "docs", "interviewQuestions.json")
 EXTRACTED_PREFS_FILE = os.path.join(BASE_DIR, "profiles", "extractedPreferences.json")
 INTERVIEW_PY_PATH = os.path.join(CURRENT_DIR, "interview.py")
 CHATBOT_PY_PATH = os.path.join(CURRENT_DIR, "generate_content.py")
+FEEDBACK_PY_PATH = os.path.join(CURRENT_DIR, "analyze_chatbot.py")
 EXTRACT_PREFS_PY_PATH = os.path.join(CURRENT_DIR, "extract_preferences.py")
 
 # Import helper functions from utils.py
@@ -529,6 +530,21 @@ def chatbot_page():
     except Exception as e:
         st.error(f"❌ Error loading chatbot: {str(e)}")
 
+# --------------------- Feedback Page ---------------------
+def feedback_page():
+    """Load and run the Feedback."""
+    try:
+        if not os.path.exists(FEEDBACK_PY_PATH):
+            st.error(f"❌ Feedback Page not found at: {FEEDBACK_PY_PATH}")
+            return
+
+        spec = importlib.util.spec_from_file_location("chatbot", FEEDBACK_PY_PATH)
+        feedback_module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(feedback_module)
+
+    except Exception as e:
+        st.error(f"❌ Error loading Feedback page: {str(e)}")
+
 # --------------------- Main App ---------------------
 def main():
     with st.sidebar:
@@ -544,6 +560,9 @@ def main():
             if st.button("💬 Chat with Persona"):
                 st.session_state.page = "chatbot"
                 st.rerun()
+            if st.button("📊 Chatbot Feedback"):
+                st.session_state.page = "feedback"
+                st.rerun()
         else:
             st.markdown("### Welcome to Persona 👋")
             st.info("Please complete the interview first.")
@@ -557,6 +576,8 @@ def main():
         profile_page()
     elif st.session_state.page == "chatbot":
         chatbot_page()
+    elif st.session_state.page == "feedback":
+        feedback_page()
 
 if __name__ == "__main__":
     main()
