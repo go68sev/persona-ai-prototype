@@ -15,5 +15,22 @@
         "thumbs_down": 0
       }
     }
+  ],
+  "2025-12-10": [
+    {
+      "role": "user",
+      "content": "Introduce yourself!",
+      "timestamp": "2025-12-10T18:18:16.718812",
+      "feedback": {}
+    },
+    {
+      "role": "assistant",
+      "content": "Hello! I'm Persona AI, your personalized assistant here to help you with your learning journey. I focus on providing structured, step-by-step explanations and real-world examples, especially in areas like Statistics, AI, ML, and Data Science. My goal is to support you in achieving your academic objectives while making the process as clear and engaging as possible. If you have any questions or topics you\u2019d like to explore, feel free to ask!",
+      "timestamp": "2025-12-10T18:18:20.902981",
+      "feedback": {
+        "thumbs_up": 0,
+        "thumbs_down": 0
+      }
+    }
   ]
 }
