@@ -75,13 +75,28 @@ if st.session_state.section_idx >= len(sections):
     if not st.session_state.closing_displayed:
         st.session_state.closing_displayed = True
         typing_effect(questions_data["CLOSING SCRIPT"]["script"])
+    else:
+        st.markdown(questions_data["CLOSING SCRIPT"]["script"])
     
     st.success("🎉 Interview Completed!")
 
     # Save responses to JSON inside profiles folder
     with open(RESPONSES_FILE, "w", encoding="utf-8") as json_file:
         json.dump(st.session_state.responses, json_file, indent=4)
-    st.write("✅ Your interview responses have been saved to your profile!")    
+    st.write("✅ Your interview responses have been saved to your profile!")
+    
+    # Add button to generate AI profile
+    st.markdown("---")
+    st.markdown("<br>", unsafe_allow_html=True)
+    
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        if st.button("✨ Generate My AI Learning Profile", type="primary", use_container_width=True, key="generate_profile"):
+            st.session_state.page = "profile"
+            st.session_state.selected_profile_tab = 1  # Set to AI Learning Profile tab (index 1)
+            st.session_state.force_regenerate = True  # Force profile generation
+            st.rerun()
+    
     st.stop()
 
 current_section = sections[st.session_state.section_idx]
