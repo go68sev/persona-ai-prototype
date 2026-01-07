@@ -77,18 +77,18 @@ if st.session_state.section_idx >= len(sections):
         typing_effect(questions_data["CLOSING SCRIPT"]["script"])
     else:
         st.markdown(questions_data["CLOSING SCRIPT"]["script"])
-    
+
     st.success("🎉 Interview Completed!")
 
     # Save responses to JSON inside profiles folder
     with open(RESPONSES_FILE, "w", encoding="utf-8") as json_file:
         json.dump(st.session_state.responses, json_file, indent=4)
     st.write("✅ Your interview responses have been saved to your profile!")
-    
+
     # Add button to generate AI profile
     st.markdown("---")
     st.markdown("<br>", unsafe_allow_html=True)
-    
+
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         if st.button("✨ Generate My AI Learning Profile", type="primary", use_container_width=True, key="generate_profile"):
@@ -96,7 +96,7 @@ if st.session_state.section_idx >= len(sections):
             st.session_state.selected_profile_tab = 1  # Set to AI Learning Profile tab (index 1)
             st.session_state.force_regenerate = True  # Force profile generation
             st.rerun()
-    
+
     st.stop()
 
 current_section = sections[st.session_state.section_idx]
@@ -130,7 +130,7 @@ if current_q["type"] == "text":
 elif current_q["type"] == "mcq":
     st.markdown(f'<p class="big-question">{current_q["question"]}</p>', unsafe_allow_html=True)
     options = current_q.get("options", [])
-    # FIX 1: Only set default_index if there's an existing response, otherwise use None
+    # Only set default_index if there's an existing response, otherwise use None
     if existing_response and existing_response in options:
         default_index = options.index(existing_response)
         response = st.radio("", options, index=default_index, label_visibility="collapsed", key=f"mcq_{response_key}")
@@ -139,7 +139,7 @@ elif current_q["type"] == "mcq":
         response = st.radio("", options, index=None, label_visibility="collapsed", key=f"mcq_{response_key}")
 elif current_q["type"] == "rating":
     st.markdown(f'<p class="big-question">{current_q["question"]}</p>', unsafe_allow_html=True)
-    # FIX 2: Use the existing response or default to the minimum value, with unique key
+    # Use the existing response or default to the minimum value, with unique key
     default_value = existing_response if existing_response is not None else 0
     scale_labels = current_q.get("scale_labels", {})
     min_label = scale_labels.get("0", "")
@@ -166,18 +166,18 @@ error_placeholder = st.empty()
 
 if show_previous:
     col1, col2, col3 = st.columns([1, 1, 1])
-    
+
     with col1:
         if st.button("⬅️", key="prev_question", use_container_width=True):
             st.session_state.responses[response_key] = response
-            
+
             if st.session_state.question_idx > 0:
                 st.session_state.question_idx -= 1
             else:
                 st.session_state.section_idx -= 1
                 st.session_state.question_idx = len(questions_data[sections[st.session_state.section_idx]]) - 1
             st.rerun()
-    
+
     with col3:
         if st.button("➡️", key="next_question", use_container_width=True):
             if is_mandatory:
@@ -188,11 +188,11 @@ if show_previous:
                     error_msg = "⚠️ Please select an option before proceeding."
                 elif current_q["type"] == "rating" and response is None:
                     error_msg = "⚠️ Please provide a rating before proceeding."
-                
+
                 if error_msg:
                     error_placeholder.error(error_msg)
                     st.stop()
-            
+
             st.session_state.responses[response_key] = response
 
             if st.session_state.question_idx < len(section_questions) - 1:
@@ -200,11 +200,11 @@ if show_previous:
             else:
                 st.session_state.section_idx += 1
                 st.session_state.question_idx = 0
-            
+
             st.rerun()
 else:
     col1, col2, col3 = st.columns([2, 1, 2])
-    
+
     with col2:
         if st.button("➡️", key="next_question", use_container_width=True):
             if is_mandatory:
@@ -215,11 +215,11 @@ else:
                     error_msg = "⚠️ Please select an option before proceeding."
                 elif current_q["type"] == "rating" and response is None:
                     error_msg = "⚠️ Please provide a rating before proceeding."
-                
+
                 if error_msg:
                     error_placeholder.error(error_msg)
                     st.stop()
-            
+
             st.session_state.responses[response_key] = response
 
             if st.session_state.question_idx < len(section_questions) - 1:
@@ -227,5 +227,5 @@ else:
             else:
                 st.session_state.section_idx += 1
                 st.session_state.question_idx = 0
-            
+
             st.rerun()
