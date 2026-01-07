@@ -11,56 +11,99 @@ NOTE: This file is NOT used by the extraction code!
 The LLM (GPT-4o-mini) reads interview responses and extracts values directly.
 This file is for HUMAN REFERENCE only - to help the team understand the system.
 
-Last updated: 2025
+STRUCTURE:
+- Part 1: Schema fields organized by section, each linked to interview questions
+- Part 2: Quick reference summary of all valid values
+
+Last updated: December 2025
 """
+
+# ============================================================================
+# PART 1: SCHEMA FIELDS → LINKED INTERVIEW QUESTIONS
+# ============================================================================
 
 # ============================================================
 # SECTION 1: BACKGROUND
+# Who the student is
 # ============================================================
-# These fields capture basic info about the student
 
 BACKGROUND_FIELDS = {
     "academic_program": {
         "type": "string",
         "description": "Student's degree/program name",
         "example": "Computer Science, Bachelor's",
-        "interview_questions": ["Q1: What are you studying?"]
+        "linked_questions": [
+            {
+                "section": "Section 1 – Personal Background",
+                "question": "What are you studying?",
+                "type": "text"
+            }
+        ]
     },
 
     "semester": {
         "type": "integer",
         "description": "Current semester number",
         "example": 4,
-        "interview_questions": ["Q3: What semester are you currently in?"]
+        "linked_questions": [
+            {
+                "section": "Section 1 – Personal Background",
+                "question": "What semester are you currently in?",
+                "type": "text"
+            }
+        ]
     },
 
     "current_focus": {
         "type": "string",
-        "description": "What they're currently learning/struggling with",
-        "example": "Data Structures, Algorithms",
-        "interview_questions": ["Q2: Which subjects are you taking?"]
+        "description": "Current subjects/courses they're taking",
+        "example": "Data Structures, Algorithms, Database Systems",
+        "linked_questions": [
+            {
+                "section": "Section 1 – Personal Background",
+                "question": "Which subjects are you taking this semester?",
+                "type": "text"
+            },
+            {
+                "section": "Section 1 – Personal Background",
+                "question": "Which subjects do you enjoy the most, and why?",
+                "type": "text"
+            }
+        ]
     },
 
     "goals": {
         "type": "string",
         "description": "Academic goals for the semester",
-        "example": "Pass algorithms exam, understand recursion",
-        "interview_questions": ["Q4: What are your academic goals?"]
+        "example": "Pass algorithms exam with good grade, understand recursion deeply",
+        "linked_questions": [
+            {
+                "section": "Section 1 – Personal Background",
+                "question": "Imagine it's the end of this semester and you're really satisfied with how things went. What would that look like? What specific goals or outcomes would make you feel successful?",
+                "type": "text"
+            }
+        ]
     },
 
     "age": {
         "type": "integer",
-        "description": "Student's age (optional)",
+        "description": "Student's age (optional field)",
         "example": 21,
-        "interview_questions": ["Q6: How old are you?"]
+        "linked_questions": [
+            {
+                "section": "Section 1 – Personal Background",
+                "question": "(Optional) How old are you?",
+                "type": "text"
+            }
+        ]
     }
 }
 
 
 # ============================================================
 # SECTION 2: LEARNING PREFERENCES
+# How the student learns best
 # ============================================================
-# These fields capture how the student prefers to learn
 
 LEARNING_PREFERENCES_FIELDS = {
     "explanation_preference": {
@@ -70,9 +113,21 @@ LEARNING_PREFERENCES_FIELDS = {
         "value_meanings": {
             "step-by-step": "Detailed, sequential explanations",
             "high-level": "Overview/big picture first",
-            "mixed": "Depends on topic"
+            "mixed": "Depends on topic complexity"
         },
-        "interview_questions": ["Q10: How do you prefer textual explanations?"]
+        "linked_questions": [
+            {
+                "section": "Section 2 – Learning Preferences",
+                "question": "How do you prefer textual explanations?",
+                "type": "text",
+                "placeholder": "e.g. Step-by-step, high-level overview..."
+            },
+            {
+                "section": "Section 4 – Comparison Questions",
+                "question": "Which explanation structure feels more natural to you? (Narrative vs Formal)",
+                "type": "mcq"
+            }
+        ]
     },
 
     "examples_preference": {
@@ -82,9 +137,66 @@ LEARNING_PREFERENCES_FIELDS = {
         "value_meanings": {
             "examples-first": "See concrete examples, then learn theory",
             "theory-first": "Understand concepts, then see examples",
-            "mixed": "Both approaches work"
+            "mixed": "Both approaches work depending on topic"
         },
-        "interview_questions": ["Q9: What type of explanation works best?", "Q7/Q8: Learning moments"]
+        "linked_questions": [
+            {
+                "section": "Section 2 – Learning Preferences",
+                "question": "What type of explanation works best for you when learning something new?",
+                "type": "text",
+                "placeholder": "e.g. examples first, diagrams, analogies, theory, text-based explanations..."
+            },
+            {
+                "section": "Section 2 – Learning Preferences",
+                "question": "Think about a recent time when you learned something difficult and it actually clicked...",
+                "type": "text",
+                "extraction_hint": "Look for mentions of 'seeing examples first' or 'understanding concept first'"
+            }
+        ]
+    },
+
+    "example_type": {
+        "type": "categorical",
+        "valid_values": ["real-world", "mathematical", "code-based", "analogies", "diagrams", "mixed"],
+        "description": "What type of examples help them most",
+        "value_meanings": {
+            "real-world": "Practical, relatable scenarios",
+            "mathematical": "Formal, numerical examples",
+            "code-based": "Programming examples",
+            "analogies": "Metaphors and comparisons",
+            "diagrams": "Visual representations",
+            "mixed": "Multiple types depending on topic"
+        },
+        "linked_questions": [
+            {
+                "section": "Section 2 – Learning Preferences",
+                "question": "What type of explanation works best for you when learning something new?",
+                "type": "text"
+            },
+            {
+                "section": "Section 4 – Comparison Questions",
+                "question": "Which type of examples do you prefer when practicing? (Real-world vs Abstract)",
+                "type": "mcq"
+            }
+        ]
+    },
+
+    "example_quantity": {
+        "type": "categorical",
+        "valid_values": ["multiple", "one-strong"],
+        "description": "Whether they prefer multiple examples or one strong example",
+        "value_meanings": {
+            "multiple": "Prefer seeing several examples to understand different angles",
+            "one-strong": "Prefer one well-explained, comprehensive example"
+        },
+        "linked_questions": [
+            {
+                "section": "Section 3 – Content Preferences",
+                "question": "For examples, you prefer:",
+                "type": "mcq",
+                "options": ["Multiple examples", "One strong example"]
+            }
+        ]
     },
 
     "detail_level": {
@@ -92,26 +204,72 @@ LEARNING_PREFERENCES_FIELDS = {
         "range": "1-10",
         "description": "How detailed they want explanations (1=brief, 10=very detailed)",
         "example": 7,
-        "interview_questions": ["Q15: How detailed do you like explanations?"]
+        "linked_questions": [
+            {
+                "section": "Section 2 – Learning Preferences",
+                "question": "How detailed do you like explanations?",
+                "type": "rating",
+                "scale": "0-10 (brief to very detailed)"
+            }
+        ]
     },
 
     "guidance_preference": {
         "type": "categorical",
         "valid_values": ["structured", "independent", "balanced"],
-        "description": "How much guidance they want",
+        "description": "How much guidance vs independence they want",
         "value_meanings": {
-            "structured": "Clear guidance and direction",
-            "independent": "Explore on their own",
-            "balanced": "Mix of both"
+            "structured": "Clear guidance, step-by-step direction",
+            "independent": "Prefer to explore and figure out on their own",
+            "balanced": "Mix of guidance and self-discovery"
         },
-        "interview_questions": ["Q11: How guided or independent do you like learning?"]
+        "linked_questions": [
+            {
+                "section": "Section 2 – Learning Preferences",
+                "question": "Describe a recent study session that felt really productive. How much guidance did you have versus figuring things out yourself?",
+                "type": "text"
+            }
+        ]
+    },
+
+    "focus_style": {
+        "type": "categorical",
+        "valid_values": ["explorer", "focused", "balanced"],
+        "description": "Whether they prefer exploring side topics or staying focused on main goal",
+        "value_meanings": {
+            "explorer": "Enjoys exploring tangents and related topics",
+            "focused": "Prefers staying on track with the main objective",
+            "balanced": "Mix of both depending on time/context"
+        },
+        "linked_questions": [
+            {
+                "section": "Section 4 – Comparison Questions",
+                "question": "When studying, which do you prefer?",
+                "type": "rating",
+                "scale": "0-10 (Exploring side topics to Staying focused on main goal)",
+                "extraction_hint": "0-3 = explorer, 4-6 = balanced, 7-10 = focused"
+            }
+        ]
     },
 
     "uses_analogies": {
         "type": "boolean",
-        "valid_values": [True, False, "sometimes"],
-        "description": "Whether analogies help them learn",
-        "interview_questions": ["Q9: mentions analogies", "Q7/Q8: Learning moments"]
+        "valid_values": [True, False],
+        "description": "Whether analogies and metaphors help them learn",
+        "linked_questions": [
+            {
+                "section": "Section 2 – Learning Preferences",
+                "question": "What type of explanation works best for you when learning something new?",
+                "type": "text",
+                "extraction_hint": "Check if they mention analogies, metaphors, or comparisons"
+            },
+            {
+                "section": "Section 4 – Comparison Questions",
+                "question": "Which explanation style helps you understand better? (Simple kid-friendly vs Technical academic)",
+                "type": "mcq",
+                "extraction_hint": "Option A (simple) often indicates preference for analogies"
+            }
+        ]
     },
 
     "presentation_style": {
@@ -123,137 +281,408 @@ LEARNING_PREFERENCES_FIELDS = {
             "verbal": "Prefers text-based explanations",
             "mixed": "Comfortable with both"
         },
-        "interview_questions": ["Q9: mentions diagrams/visuals"]
+        "linked_questions": [
+            {
+                "section": "Section 2 – Learning Preferences",
+                "question": "What type of explanation works best for you when learning something new?",
+                "type": "text",
+                "extraction_hint": "Look for mentions of diagrams, visuals, flowcharts vs text, reading"
+            },
+            {
+                "section": "Section 3 – Content Preferences",
+                "question": "Does video-based learning help you?",
+                "type": "mcq",
+                "extraction_hint": "Yes to video often correlates with visual preference"
+            }
+        ]
     },
 
     "practice_problems": {
         "type": "boolean",
-        "valid_values": [True, False, "sometimes"],
-        "description": "Whether they want practice problems included",
-        "interview_questions": ["Q20: Should explanations include practice problems?"]
+        "valid_values": [True, False],
+        "description": "Whether they want practice problems included in explanations",
+        "linked_questions": [
+            {
+                "section": "Section 3 – Content Preferences",
+                "question": "Should explanations include practice problems?",
+                "type": "mcq",
+                "options": ["Yes", "Maybe later", "No"]
+            }
+        ]
     },
 
     "code_examples": {
         "type": "categorical",
         "valid_values": ["yes", "if-necessary", "no"],
-        "description": "Whether they want code examples",
+        "description": "Whether they want code examples for technical topics",
         "value_meanings": {
-            "yes": "Always include code",
-            "if-necessary": "Only when relevant",
-            "no": "Prefer conceptual explanations"
+            "yes": "Always include code examples",
+            "if-necessary": "Only when directly relevant",
+            "no": "Prefer conceptual explanations without code"
         },
-        "interview_questions": ["Q18: Do you want code examples?"]
+        "linked_questions": [
+            {
+                "section": "Section 3 – Content Preferences",
+                "question": "For technical topics, do you want code examples?",
+                "type": "mcq",
+                "options": ["Yes", "Only if necessary", "No"]
+            }
+        ]
+    },
+
+    "pacing": {
+        "type": "categorical",
+        "valid_values": ["fast", "moderate", "slow-thorough"],
+        "description": "Preferred learning pace",
+        "value_meanings": {
+            "fast": "Quick pace, hit key points",
+            "moderate": "Balanced pace",
+            "slow-thorough": "Take time, ensure deep understanding"
+        },
+        "linked_questions": [
+            {
+                "section": "Section 2 – Learning Preferences",
+                "question": "Think about a recent time when you learned something difficult and it actually clicked...",
+                "type": "text",
+                "extraction_hint": "Infer from their description of successful learning pace"
+            },
+            {
+                "section": "Section 6 – Situational",
+                "question": "You've set aside 3 hours to study for an algorithms exam. Describe exactly how you would structure those 3 hours...",
+                "type": "text",
+                "extraction_hint": "Infer from how they break down time and pace themselves"
+            }
+        ]
+    },
+
+    "learner_type": {
+        "type": "categorical",
+        "valid_values": ["analytical", "intuitive", "example-driven", "pattern-based", "sequential"],
+        "description": "Primary learning style/approach",
+        "value_meanings": {
+            "analytical": "Breaks down problems logically, wants to understand 'why'",
+            "intuitive": "Grasps concepts quickly, comfortable with ambiguity",
+            "example-driven": "Learns best through concrete examples",
+            "pattern-based": "Looks for patterns and connections",
+            "sequential": "Prefers linear, step-by-step progression"
+        },
+        "linked_questions": [
+            {
+                "section": "Section 2 – Learning Preferences",
+                "question": "Think about a recent time when you learned something difficult and it actually clicked...",
+                "type": "text",
+                "extraction_hint": "Infer learner type from their described approach"
+            },
+            {
+                "section": "Section 2 – Learning Preferences",
+                "question": "What type of explanation works best for you when learning something new?",
+                "type": "text"
+            },
+            {
+                "section": "Section 6 – Situational",
+                "question": "After studying a topic, how do you check that you truly understand it?",
+                "type": "text",
+                "extraction_hint": "Method of verification reveals learning style"
+            }
+        ]
+    },
+
+    "repetition_preference": {
+        "type": "categorical",
+        "valid_values": ["spaced-repetition", "repeated-summaries", "minimal-repetition"],
+        "description": "How they prefer to reinforce learning",
+        "value_meanings": {
+            "spaced-repetition": "Review at intervals over time",
+            "repeated-summaries": "Multiple summaries/reviews in one session",
+            "minimal-repetition": "Understand once, move on"
+        },
+        "linked_questions": [
+            {
+                "section": "Section 2 – Learning Preferences",
+                "question": "For memorization, what works best for you?",
+                "type": "text",
+                "placeholder": "e.g. Flashcards, Summaries, Mnemonics..."
+            }
+        ]
     }
 }
 
 
 # ============================================================
 # SECTION 3: COMMUNICATION STYLE
+# How the AI should communicate with them
 # ============================================================
-# These fields capture how the AI should communicate
 
 COMMUNICATION_STYLE_FIELDS = {
     "tone": {
         "type": "categorical",
         "valid_values": ["formal", "conversational"],
-        "description": "Preferred writing style",
+        "description": "Preferred writing/communication style",
         "value_meanings": {
             "formal": "Academic, professional language",
             "conversational": "Friendly, casual language"
         },
-        "interview_questions": ["Q24: Which writing style helps you more?"]
+        "linked_questions": [
+            {
+                "section": "Section 4 – Comparison Questions",
+                "question": "Which writing style helps you more?",
+                "type": "rating",
+                "scale": "0-10 (Formal academic to Friendly conversational)"
+            },
+            {
+                "section": "Section 4 – Comparison Questions",
+                "question": "Which explanation style helps you understand better? (Simple vs Technical)",
+                "type": "mcq"
+            }
+        ]
     },
 
     "feedback_style": {
         "type": "categorical",
-        "valid_values": ["supportive", "direct"],
+        "valid_values": ["supportive-gentle", "supportive-direct", "direct-critical"],
         "description": "How they want feedback delivered",
         "value_meanings": {
-            "supportive": "Encouraging, gentle corrections",
-            "direct": "Straightforward, tells exactly what's wrong"
+            "supportive-gentle": "Encouraging, soft corrections with praise",
+            "supportive-direct": "Kind but clear about what's wrong",
+            "direct-critical": "Straightforward, no sugarcoating"
         },
-        "interview_questions": ["Q27: Which feedback style helps you improve?"]
+        "linked_questions": [
+            {
+                "section": "Section 4 – Comparison Questions",
+                "question": "Which feedback style helps you improve faster? (Encouraging vs Direct)",
+                "type": "rating",
+                "scale": "0-10 (Encouraging & supportive to Direct & corrective)"
+            },
+            {
+                "section": "Section 4 – Comparison Questions",
+                "question": "Which learning challenge do you prefer when practicing?",
+                "type": "mcq",
+                "options": ["Encouraging & supportive feedback", "Direct & corrective feedback"]
+            }
+        ]
     },
 
     "response_depth": {
         "type": "categorical",
         "valid_values": ["quick", "detailed"],
-        "description": "Preferred response length",
+        "description": "Preferred response length/depth",
         "value_meanings": {
             "quick": "Brief, to-the-point answers",
             "detailed": "Thorough, comprehensive explanations"
         },
-        "interview_questions": ["Q22: Quick response or deep explanation?"]
+        "linked_questions": [
+            {
+                "section": "Section 4 – Comparison Questions",
+                "question": "For answers, you prefer:",
+                "type": "mcq",
+                "options": ["Quick response", "Deep explanation"]
+            }
+        ]
     },
 
     "question_engagement": {
         "type": "boolean",
         "valid_values": [True, False],
-        "description": "Whether AI should ask questions back",
-        "interview_questions": ["Q23: Do you like when system asks you questions?"]
+        "description": "Whether the AI should ask questions to engage thinking",
+        "linked_questions": [
+            {
+                "section": "Section 4 – Comparison Questions",
+                "question": "Do you like when the system asks you to engage your thinking, and how?",
+                "type": "text",
+                "placeholder": "e.g. Questions after explanation, quizzes..."
+            }
+        ]
+    },
+
+    "summaries_after_explanation": {
+        "type": "boolean",
+        "valid_values": [True, False],
+        "description": "Whether they want summaries after explanations",
+        "linked_questions": [
+            {
+                "section": "Section 3 – Content Preferences",
+                "question": "Do you want summaries after explanations?",
+                "type": "mcq",
+                "options": ["Yes", "Sometimes", "No"]
+            }
+        ]
     }
 }
 
 
 # ============================================================
 # SECTION 4: EMOTIONAL PATTERNS
+# How they handle difficulty and emotions while learning
 # ============================================================
-# These fields capture emotional responses to learning
 
 EMOTIONAL_PATTERNS_FIELDS = {
     "stress_response": {
         "type": "categorical",
         "valid_values": ["push-through", "pause", "avoid", "depends"],
-        "description": "How they react when stressed",
+        "description": "How they react when stressed or stuck",
         "value_meanings": {
             "push-through": "Keeps working despite stress",
-            "pause": "Takes breaks to reset",
-            "avoid": "Tends to avoid stressful tasks",
-            "depends": "Varies by situation"
+            "pause": "Takes breaks to reset mentally",
+            "avoid": "Tends to switch to easier tasks or avoid",
+            "depends": "Varies by situation and stress level"
         },
-        "interview_questions": ["Section 5: When stuck, what is your first reaction?"]
+        "linked_questions": [
+            {
+                "section": "Section 5 – Academic Emotions & Study Behavior",
+                "question": "When you feel stuck studying, what is your first reaction?",
+                "type": "text",
+                "placeholder": "e.g. push through, short reset break, avoiding tasks..."
+            }
+        ]
     },
 
     "overwhelm_support": {
         "type": "categorical",
         "valid_values": ["encouragement", "step-by-step", "break"],
-        "description": "What helps when overwhelmed",
+        "description": "What helps when they feel overwhelmed",
         "value_meanings": {
             "encouragement": "Emotional support and motivation",
-            "step-by-step": "Breaking down into smaller pieces",
-            "break": "Stepping away temporarily"
+            "step-by-step": "Breaking down into smaller, manageable pieces",
+            "break": "Stepping away temporarily to reset"
         },
-        "interview_questions": ["Section 5: When overwhelmed, what helps more?"]
+        "linked_questions": [
+            {
+                "section": "Section 5 – Academic Emotions & Study Behavior",
+                "question": "When overwhelmed, what helps more?",
+                "type": "text",
+                "placeholder": "e.g. encouragement, step-by-step structure..."
+            }
+        ]
     },
 
     "confidence_level": {
         "type": "scale",
         "range": "1-10",
-        "description": "Confidence in their study methods (1=low, 10=high)",
+        "description": "Confidence in their current study methods (1=low, 10=high)",
         "example": 6,
-        "interview_questions": ["Section 5: How confident in your study methods?"]
+        "linked_questions": [
+            {
+                "section": "Section 5 – Academic Emotions & Study Behavior",
+                "question": "How confident are you in your current study methods?",
+                "type": "rating",
+                "scale": "1-10 (not confident to very confident)"
+            }
+        ]
+    },
+
+    "mood_sharing_comfort": {
+        "type": "scale",
+        "range": "1-10",
+        "description": "How comfortable they are sharing their mood/emotions with the system (1=very uncomfortable, 10=very comfortable)",
+        "example": 5,
+        "linked_questions": [
+            {
+                "section": "Section 5 – Academic Emotions & Study Behavior",
+                "question": "How comfortable are you sharing your mood with the system?",
+                "type": "rating",
+                "scale": "0-10 (very uncomfortable to very comfortable)"
+            }
+        ]
+    },
+
+    "help_seeking_comfort": {
+        "type": "scale",
+        "range": "1-10",
+        "description": "How comfortable they are asking for help when stuck (1=very uncomfortable, 10=very comfortable)",
+        "example": 6,
+        "linked_questions": [
+            {
+                "section": "Section 5 – Academic Emotions & Study Behavior",
+                "question": "How do you feel about asking for help when you're stuck?",
+                "type": "rating",
+                "scale": "0-10 (very uncomfortable to very comfortable)"
+            }
+        ]
     },
 
     "motivation_drivers": {
         "type": "string",
         "description": "What motivates them to keep learning",
-        "example": "Seeing progress, solving problems, real-world applications",
-        "interview_questions": ["Inferred from Q7, Q5, situational questions"]
+        "example": "Seeing progress, solving challenging problems, real-world applications",
+        "linked_questions": [
+            {
+                "section": "Section 1 – Personal Background",
+                "question": "Which subjects do you enjoy the most, and why?",
+                "type": "text",
+                "extraction_hint": "The 'why' reveals motivation drivers"
+            },
+            {
+                "section": "Section 2 – Learning Preferences",
+                "question": "Think about a recent time when you learned something difficult and it actually clicked...",
+                "type": "text",
+                "extraction_hint": "What made it satisfying reveals motivators"
+            },
+            {
+                "section": "Section 5 – Academic Emotions & Study Behavior",
+                "question": "When you feel confident about a topic, what do you prefer to do next?",
+                "type": "text"
+            }
+        ]
     },
 
     "common_blockers": {
         "type": "string",
-        "description": "What drains their motivation",
-        "example": "Confusion, lack of progress, overwhelm",
-        "interview_questions": ["Section 5: What drains your motivation?"]
+        "description": "What typically blocks their progress or drains motivation",
+        "example": "Confusion without clear next steps, feeling overwhelmed, lack of progress",
+        "linked_questions": [
+            {
+                "section": "Section 2 – Learning Preferences",
+                "question": "Now think about a time when learning felt harder than expected. What was happening? What made it difficult?",
+                "type": "text"
+            },
+            {
+                "section": "Section 5 – Academic Emotions & Study Behavior",
+                "question": "When do you usually feel stuck when learning?",
+                "type": "text"
+            },
+            {
+                "section": "Section 5 – Academic Emotions & Study Behavior",
+                "question": "What usually drains your motivation the most?",
+                "type": "text"
+            },
+            {
+                "section": "Section 5 – Academic Emotions & Study Behavior",
+                "question": "List any problems you find with your current study methods?",
+                "type": "text"
+            }
+        ]
+    },
+
+    "learning_challenges": {
+        "type": "string",
+        "description": "Specific challenges they face when learning",
+        "example": "Staying focused for long periods, understanding abstract concepts",
+        "linked_questions": [
+            {
+                "section": "Section 2 – Learning Preferences",
+                "question": "Now think about a time when learning felt harder than expected...",
+                "type": "text"
+            },
+            {
+                "section": "Section 5 – Academic Emotions & Study Behavior",
+                "question": "List any problems you find with your current study methods?",
+                "type": "text"
+            },
+            {
+                "section": "Section 5 – Academic Emotions & Study Behavior",
+                "question": "How often does anxiety impact your learning?",
+                "type": "rating",
+                "scale": "0-10"
+            }
+        ]
     }
 }
 
 
 # ============================================================
 # SECTION 5: STUDY BEHAVIOR
+# Study habits and patterns
 # ============================================================
-# These fields capture study habits and patterns
 
 STUDY_BEHAVIOR_FIELDS = {
     "study_rhythm": {
@@ -261,26 +690,68 @@ STUDY_BEHAVIOR_FIELDS = {
         "valid_values": ["regular", "cramming", "mixed"],
         "description": "Study pattern over the semester",
         "value_meanings": {
-            "regular": "Consistent study throughout",
-            "cramming": "Intensive study near deadlines",
-            "mixed": "Combination of both"
+            "regular": "Consistent study throughout semester",
+            "cramming": "Intensive study close to deadlines/exams",
+            "mixed": "Combination depending on subject/deadline"
         },
-        "interview_questions": ["Q14: What does your study rhythm look like?"]
+        "linked_questions": [
+            {
+                "section": "Section 2 – Learning Preferences",
+                "question": "What does your study rhythm currently look like over the semester, and how would you ideally like it to be?",
+                "type": "text"
+            },
+            {
+                "section": "Section 6 – Situational",
+                "question": "It's Sunday evening and you have three assignments due this week... Describe how you would plan and execute your week.",
+                "type": "text"
+            }
+        ]
     },
 
     "focus_duration": {
         "type": "string",
-        "description": "How long they can focus in one session",
+        "description": "How long they can focus in one session before needing a break",
         "example": "45-60 minutes",
-        "interview_questions": ["Situational: 3-hour study session breakdown"]
+        "linked_questions": [
+            {
+                "section": "Section 6 – Situational",
+                "question": "You've set aside 3 hours to study for an algorithms exam. Describe exactly how you would structure those 3 hours...",
+                "type": "text",
+                "extraction_hint": "Look for how they break up study blocks"
+            },
+            {
+                "section": "Section 6 – Situational",
+                "question": "Describe your ideal study environment and learning session...",
+                "type": "text"
+            }
+        ]
     },
 
     "attention_span": {
         "type": "scale",
         "range": "1-10",
-        "description": "How easily distracted (1=very distracted, 10=very focused)",
+        "description": "How easily distracted vs focused (1=very distracted, 10=very focused)",
         "example": 6,
-        "interview_questions": ["Inferred from situational questions, focus recovery"]
+        "linked_questions": [
+            {
+                "section": "Section 5 – Academic Emotions & Study Behavior",
+                "question": "How often do you feel stuck when learning?",
+                "type": "rating",
+                "extraction_hint": "High stuck frequency may indicate attention challenges"
+            },
+            {
+                "section": "Section 5 – Academic Emotions & Study Behavior",
+                "question": "What helps you regain focus after getting distracted?",
+                "type": "text",
+                "extraction_hint": "Frequency of needing this indicates attention span"
+            },
+            {
+                "section": "Section 6 – Situational",
+                "question": "Describe your ideal study environment...",
+                "type": "text",
+                "extraction_hint": "Environment needs reveal focus requirements"
+            }
+        ]
     },
 
     "recovery_strategy": {
@@ -289,120 +760,108 @@ STUDY_BEHAVIOR_FIELDS = {
         "description": "How they regain focus after distraction",
         "value_meanings": {
             "short-break": "Takes brief 5-10 minute breaks",
-            "task-switch": "Changes to different/easier task",
-            "goal-review": "Reminds themselves of goals",
-            "external-reminder": "Uses external prompts/tools"
+            "task-switch": "Changes to a different or easier task",
+            "goal-review": "Reminds themselves of goals/why they're studying",
+            "external-reminder": "Uses external tools, alarms, or accountability"
         },
-        "interview_questions": ["Section 5: What helps you regain focus?"]
+        "linked_questions": [
+            {
+                "section": "Section 5 – Academic Emotions & Study Behavior",
+                "question": "What helps you regain focus after getting distracted?",
+                "type": "text"
+            },
+            {
+                "section": "Section 5 – Academic Emotions & Study Behavior",
+                "question": "What do you normally do after solving something challenging?",
+                "type": "text"
+            }
+        ]
     },
 
     "mistake_handling": {
         "type": "categorical",
         "valid_values": ["immediate-fix", "deferred"],
-        "description": "How they handle mistakes",
+        "description": "How they handle mistakes when learning",
         "value_meanings": {
-            "immediate-fix": "Fix mistakes right away",
-            "deferred": "Move on, revisit later"
+            "immediate-fix": "Stop and fix mistakes right away",
+            "deferred": "Note mistakes, move on, revisit later"
         },
-        "interview_questions": ["Q16: How do you proceed after making a mistake?"]
+        "linked_questions": [
+            {
+                "section": "Section 2 – Learning Preferences",
+                "question": "How do you typically proceed after making a mistake?",
+                "type": "text"
+            }
+        ]
     }
 }
 
 
-# ============================================================
-# QUICK REFERENCE: ALL VALID VALUES
-# ============================================================
+# ============================================================================
+# PART 2: QUICK REFERENCE SUMMARY
+# ============================================================================
 # Use this as a cheat sheet when reviewing extracted profiles
 
+
 VALID_VALUES_SUMMARY = {
-    # Categorical fields
+    # ===================
+    # CATEGORICAL FIELDS
+    # ===================
+
+    # Learning Preferences
     "explanation_preference": ["step-by-step", "high-level", "mixed"],
-    "examples_preference": ["examples-first", "theory-first", "mixed"],
+    "examples_timing": ["examples-first", "theory-first", "mixed"],
+    "example_type": ["real-world", "mathematical", "code-based", "analogies", "diagrams", "mixed"],
     "guidance_preference": ["structured", "independent", "balanced"],
     "presentation_style": ["visual", "verbal", "mixed"],
     "code_examples": ["yes", "if-necessary", "no"],
+    "pacing": ["fast", "moderate", "slow-thorough"],
+    "learner_type": ["analytical", "intuitive", "example-driven", "pattern-based", "sequential"],
+    "repetition_preference": ["spaced-repetition", "repeated-summaries", "minimal-repetition"],
+
+    # Communication Style
     "tone": ["formal", "conversational"],
-    "feedback_style": ["supportive", "direct"],
+    "feedback_style": ["supportive-gentle", "supportive-direct", "direct-critical"],
     "response_depth": ["quick", "detailed"],
+
+    # Emotional Patterns
     "stress_response": ["push-through", "pause", "avoid", "depends"],
     "overwhelm_support": ["encouragement", "step-by-step", "break"],
+
+    # Study Behavior
     "study_rhythm": ["regular", "cramming", "mixed"],
     "recovery_strategy": ["short-break", "task-switch", "goal-review", "external-reminder"],
     "mistake_handling": ["immediate-fix", "deferred"],
 
-    # Scale fields (1-10)
+    # ===================
+    # SCALE FIELDS (1-10)
+    # ===================
     "detail_level": "1-10 (1=brief, 10=very detailed)",
-    "confidence_level": "1-10 (1=low, 10=high)",
+    "confidence_level": "1-10 (1=not confident, 10=very confident)",
     "attention_span": "1-10 (1=easily distracted, 10=very focused)",
 
-    # Boolean fields
-    "uses_analogies": [True, False, "sometimes"],
-    "practice_problems": [True, False, "sometimes"],
-    "question_engagement": [True, False]
-}
+    # ===================
+    # BOOLEAN FIELDS
+    # ===================
+    "uses_analogies": [True, False],
+    "practice_problems": [True, False],
+    "question_engagement": [True, False],
+    "summaries_after_explanation": [True, False],
 
+    # ===================
+    # STRING FIELDS
+    # ===================
+    "academic_program": "Free text - degree/program name",
+    "current_focus": "Free text - current subjects",
+    "goals": "Free text - academic goals",
+    "focus_duration": "Free text - e.g., '45-60 minutes'",
+    "motivation_drivers": "Free text - what motivates them",
+    "common_blockers": "Free text - what blocks progress",
+    "learning_challenges": "Free text - specific challenges faced",
 
-# ============================================================
-# INTERVIEW QUESTION → SCHEMA FIELD MAPPING
-# ============================================================
-# Quick reference: which questions inform which fields
-
-QUESTION_TO_FIELD_MAPPING = {
-    # Section 1 - Background
-    "Q1 (studying)": "background.academic_program",
-    "Q2 (subjects)": "background.current_focus",
-    "Q3 (semester)": "background.semester",
-    "Q4 (goals)": "background.goals",
-    "Q5 (favorite subjects)": "background.current_focus, emotional_patterns.motivation_drivers",
-    "Q6 (age)": "background.age",
-    "Q7 (good learning moment)": "learning_preferences.examples_preference, learning_preferences.presentation_style",
-    "Q8 (difficult moment)": "emotional_patterns.common_blockers, learning_preferences.explanation_preference",
-
-    # Section 2 - Learning Preferences
-    "Q9 (explanation type)": "learning_preferences.examples_preference, learning_preferences.presentation_style, learning_preferences.uses_analogies",
-    "Q10 (textual preference)": "learning_preferences.explanation_preference",
-    "Q11 (guidance level)": "learning_preferences.guidance_preference",
-    "Q12 (theory:practice)": "learning_preferences.practice_problems",
-    "Q13 (memorization)": "study_behavior (inferred)",
-    "Q14 (study rhythm)": "study_behavior.study_rhythm",
-    "Q15 (detail level)": "learning_preferences.detail_level",
-    "Q16 (mistake handling)": "study_behavior.mistake_handling",
-
-    # Section 3 - Content
-    "Q17 (video)": "Not in simplified schema",
-    "Q18 (code examples)": "learning_preferences.code_examples",
-    "Q19 (example quantity)": "learning_preferences (inferred)",
-    "Q20 (practice problems)": "learning_preferences.practice_problems",
-    "Q21 (summaries)": "Not in simplified schema",
-
-    # Section 4 - Comparison
-    "Q22 (response depth)": "communication_style.response_depth",
-    "Q23 (engagement)": "communication_style.question_engagement",
-    "Q24 (writing style)": "communication_style.tone",
-    "Q25 (explanation style)": "communication_style.tone",
-    "Q26 (focus)": "study_behavior (inferred)",
-    "Q27 (feedback style)": "communication_style.feedback_style",
-    "Q28 (structure)": "learning_preferences.explanation_preference",
-    "Q29 (example type)": "learning_preferences.examples_preference",
-
-    # Section 5 - Emotions & Behavior
-    "Stuck frequency": "emotional_patterns (inferred)",
-    "When stuck": "emotional_patterns.common_blockers",
-    "Stuck reaction": "emotional_patterns.stress_response",
-    "Post-challenge": "study_behavior.recovery_strategy",
-    "Mood comfort": "Not in simplified schema",
-    "Overwhelm support": "emotional_patterns.overwhelm_support",
-    "Method confidence": "emotional_patterns.confidence_level",
-    "Method problems": "emotional_patterns.common_blockers",
-    "Help seeking": "Not in simplified schema",
-    "Motivation drain": "emotional_patterns.common_blockers",
-    "Focus recovery": "study_behavior.recovery_strategy",
-    "Post-confidence": "study_behavior (inferred)",
-    "Anxiety impact": "Not in simplified schema",
-
-    # Situational Questions
-    "Weekly planning": "study_behavior.study_rhythm, emotional_patterns.stress_response",
-    "3-hour session": "study_behavior.focus_duration, study_behavior.recovery_strategy",
-    "Ideal environment": "study_behavior.attention_span, study_behavior.focus_duration",
-    "Understanding check": "learning_preferences (inferred)"
+    # ===================
+    # INTEGER FIELDS
+    # ===================
+    "semester": "Integer - current semester number",
+    "age": "Integer - student's age (optional)"
 }
