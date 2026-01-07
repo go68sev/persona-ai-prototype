@@ -144,15 +144,18 @@ If it is a Subject specific chat, focus on that subject only.
 -  Mention the topics the student struggled with or excelled at.
 - Suggest improvements tailored to the student's needs.
 
-Output format EXACTLY like this:
+Output format EXACTLY like this: (all in different lines, Before colon is label, After colon is content, only label in bold)
 
 Study Behavior Summary:
 <your summary text>
 
-Estimated Study Time:
-<approximate number> minutes
+Main topics covered: <list of main topics>
+
+Estimated Study Time: <approximate number> minutes
 
 Mood: <brief mood description>
+
+What can be improved: <specific suggestions>
 
 Do NOT repeat the conversation.
 Do NOT explain your calculations.
