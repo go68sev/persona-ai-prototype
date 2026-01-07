@@ -92,7 +92,7 @@
       "content": "Based on the information you've shared, you're a 22-year-old student in your 5th semester of an Informatics program, focusing on Statistics, AI, ML, and Data Science. You aim for good grades, around a 1.7.\n\nYour learning style is structured and example-driven, and you prefer step-by-step explanations with real-world examples. You like detailed information and appreciate mixed presentation styles. You\u2019re motivated to improve, but sometimes feel overwhelmed by new concepts and abstract ideas, and you find clarity helps you overcome confusion.\n\nYou study regularly for 1-2 hours at a time, taking short breaks to recover your focus. You tend to handle mistakes by deferring them for later reflection and prefer spaced repetition for reinforcement.\n\nYou communicate in a conversational tone and appreciate supportive, direct feedback. Summaries after explanations are helpful for you, and you engage with questions to deepen your understanding. \n\nIf there's anything more specific you'd like to share or ask about, feel free!",
       "timestamp": "2026-01-07T09:01:27.342638",
       "feedback": {
-        "thumbs_up": 0,
+        "thumbs_up": 1,
         "thumbs_down": 0
       }
     },
@@ -123,7 +123,7 @@
       "timestamp": "2026-01-07T09:02:54.735819",
       "feedback": {
         "thumbs_up": 0,
-        "thumbs_down": 0
+        "thumbs_down": 1
       }
     }
   ]

@@ -9,6 +9,7 @@ from openai import OpenAI
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 CHAT_FOLDER = "profiles/chat_history"
+PROGRESS_FOLDER = "profiles/progress_tracker"
 
 def load_chat(subject):
     file_path = os.path.join(CHAT_FOLDER, f"{subject}.json")
@@ -19,6 +20,48 @@ def load_chat(subject):
             return json.load(f)
     except:
         return {}
+
+def load_progress(subject):
+    path = os.path.join(PROGRESS_FOLDER, f"{subject}.json")
+
+    # If file does not exist, create an empty one
+    if not os.path.exists(path):
+        os.makedirs(PROGRESS_FOLDER, exist_ok=True)
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump({}, f, indent=2)
+        return {}
+
+    # Load existing file
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except json.JSONDecodeError:
+        # If file is corrupted, reset safely
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump({}, f, indent=2)
+        return {}
+
+    
+
+def save_progress(subject, date, entry):
+    os.makedirs(PROGRESS_FOLDER, exist_ok=True)
+    path = os.path.join(PROGRESS_FOLDER, f"{subject}.json")
+
+    if os.path.exists(path):
+        with open(path, "r", encoding="utf-8") as f:
+            try:
+                data = json.load(f)
+            except:
+                data = {}
+    else:
+        data = {}
+
+    # Save ONE object per date (overwrite allowed)
+    data[date] = entry
+
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2)
+
 
 def analyze_feedback(subject):
     data = load_chat(subject)
@@ -119,6 +162,7 @@ else:
             st.warning("No chat content found for this date.")
         else:
             with st.spinner("Analyzing study behavior..."):
+                
                 prompt = f"""
 You are an educational analyst AI.
 
@@ -128,42 +172,30 @@ for ONE study session on {selected_date}.
 Each message includes a timestamp in ISO format.
 
 Your tasks:
-1. Analyze the student's study behavior in 3–5 concise sentences. You are talking to the student directly, so use "you" and "your".
-2. Estimate the approximate total time (in minutes or hours) the student
-   actively spent studying this subject on this day, based on
-   the timestamps and interaction gaps.
+1. Analyze the student's study behavior in 2-4 concise sentences. You are talking to the student directly, so use "you" and "your".
+2. Estimate the approximate total time the student actively spent studying this subject.
 
-Focus on:
-- Engagement level
-- Curiosity and depth of questions
-- Consistency and clarity
-- Signs of confusion or confidence or stress
-- Overall learning attitude
+Return ONLY valid JSON.
+Do NOT include markdown.
+Do NOT include explanations.
+Do NOT include extra text.
 
-If it is a Subject specific chat, focus on that subject only.
--  Mention the topics the student struggled with or excelled at.
-- Suggest improvements tailored to the student's needs.
+The JSON must follow EXACTLY this schema:
 
-Output format EXACTLY like this: (all in different lines, Before colon is label, After colon is content, only label in bold)
-
-Study Behavior Summary:
-<your summary text>
-
-Main topics covered: <list of main topics>
-
-Estimated Study Time: <approximate number> minutes
-
-Mood: <brief mood description>
-
-What can be improved: <specific suggestions>
-
-Do NOT repeat the conversation.
-Do NOT explain your calculations.
+{{
+  "date": "<YYYY-MM-DD>",
+  "summary": "<concise summary>",
+  "topics_covered": "<comma-separated topics>",
+  "estimated_study_time": "<time in minutes or hours>",
+  "confidence_level": "<number out of 10>",
+  "satisfaction_level": "<number out of 10>",
+  "mood": "<short description>",
+  "improvements": "<specific suggestions>"
+}}
 
 Conversation:
 {chat_text}
 """
-
 
                 try:
                     response = client.chat.completions.create(
@@ -175,36 +207,43 @@ Conversation:
                         temperature=0.4,
                     )
 
-                    analysis = response.choices[0].message.content
-
-                    summary_text = ""
-                    estimated_time = ""
-
-                    if "Estimated Study Time:" in analysis:
-                        summary_text, estimated_time = analysis.split("Estimated Study Time:")
-                    else:
-                        summary_text = analysis
+                    analysis_text = response.choices[0].message.content.strip()
+                    try:
+                        analysis_json = json.loads(analysis_text)
+                    except json.JSONDecodeError:
+                        st.error("LLM did not return valid JSON")
+                        st.text(analysis_text)
+                        st.stop()
 
                     st.markdown("### 🧠 Study Behavior Summary")
+
                     st.markdown(
                         f"""
-                        <div style="padding:12px; border-radius:8px; background-color:#f5f5f5;">
-                        {summary_text.replace("Study Behavior Summary:", "").strip()}
+                        <div style="padding:14px; border-radius:8px; background-color:#f5f5f5;">
+                        <b>Summary:</b> {analysis_json["summary"]}<br><br>
+                        <b>Main topics covered:</b> {analysis_json["topics_covered"]}<br>
+                        <b>Estimated study time:</b> {analysis_json["estimated_study_time"]}<br>
+                        <b>Confidence level:</b> {analysis_json["confidence_level"]}<br>
+                        <b>Satisfaction level:</b> {analysis_json["satisfaction_level"]}<br>
+                        <b>Mood:</b> {analysis_json["mood"]}<br><br>
+                        <b>What can be improved:</b> {analysis_json["improvements"]}
                         </div>
                         """,
                         unsafe_allow_html=True
                     )
 
-                    if estimated_time:
-                        st.markdown("### ⏱️ Estimated Study Time")
-                        st.markdown(
-                            f"""
-                            <div style="padding:10px; border-radius:8px; background-color:#eef2f7;">
-                            <strong>{estimated_time.strip()}</strong>
-                            </div>
-                            """,
-                            unsafe_allow_html=True
-                        )
+
+                    # Save analysis to progress tracker
+                    save_progress(
+                        subject,
+                        analysis_json["date"],
+                        {
+                            "Topics covered": analysis_json["topics_covered"],
+                            "Time spent on the subject": analysis_json["estimated_study_time"],
+                            "Mood": analysis_json["mood"],
+                            "Satisfaction level": analysis_json["satisfaction_level"]
+                        }
+                    )
 
                 except Exception as e:
                     st.error(f"Failed to analyze study behavior: {e}")
